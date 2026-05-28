@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感知与避障 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .sense-page {
+            padding: 40px 0;
+        }
+        .sense-header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .sense-header h1 {
+            font-size: 2.6rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .sense-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        .sense-section {
+            margin-top: 30px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+        .sense-section h2 {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 18px;
+            border-left: 5px solid #667eea;
+            padding-left: 16px;
+        }
+        .sense-section h3,
+        .sense-section h4,
+        .sense-section h5 {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 20px 0 10px;
+        }
+        .sense-section p,
+        .sense-section li {
+            color: #444;
+            line-height: 1.8;
+        }
+        .sense-section ul,
+        .sense-section ol {
+            margin: 12px 0 18px 1.4rem;
+        }
+        .sense-section ul li,
+        .sense-section ol li {
+            margin-bottom: 10px;
+        }
+        .sense-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .sense-table th,
+        .sense-table td {
+            border: 1px solid #e8eaf6;
+            padding: 14px 12px;
+            text-align: left;
+        }
+        .sense-table th {
+            background: #f5f7ff;
+            color: #333;
+        }
+        .code-block {
+            background: #f4f6ff;
+            border-radius: 16px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid #e5e7f0;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: Consolas, 'Courier New', monospace;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+        .diagram {
+            border: 1px solid #e5e7f0;
+            border-radius: 16px;
+            padding: 20px;
+            background: #f8f9ff;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: Consolas, 'Courier New', monospace;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header" role="banner">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <a class="btn-login" href="登录.html">登录</a>
+                <a class="btn-register" href="注册.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav" role="navigation">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="首页.html"><span class="nav-icon">🏠</span><span class="nav-text">首页</span></a></li>
+                <li class="nav-item"><a href="连接.html"><span class="nav-icon">🔗</span><span class="nav-text">设备连接</span></a></li>
+                <li class="nav-item"><a href="地图.html"><span class="nav-icon">🗺️</span><span class="nav-text">地图视图</span></a></li>
+                <li class="nav-item"><a href="控制台.html"><span class="nav-icon">🎮</span><span class="nav-text">控制台</span></a></li>
+                <li class="nav-item"><a href="任务管理.html"><span class="nav-icon">📋</span><span class="nav-text">任务管理</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content sense-page">
+        <div class="container">
+            <div class="sense-header">
+                <h1>无人机感知避障与自主智能</h1>
+                
+            </div>
+
+            <section id="perception" class="sense-section">
+                <h2>一、感知系统瓶颈深度分析</h2>
+                <h3>1. 传感器技术局限性</h3>
+                <h4>视觉传感器问题</h4>
+                <p>性能参数对比：</p>
+                <table class="sense-table">
+                    <thead>
+                        <tr>
+                            <th>挑战场景</th>
+                            <th>传统RGB相机</th>
+                            <th>事件相机</th>
+                            <th>热成像相机</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>强光/逆光</td><td>严重过曝</td><td>动态范围高</td><td>不受影响</td></tr>
+                        <tr><td>低光照</td><td>噪声严重</td><td>微光敏感</td><td>依赖温差</td></tr>
+                        <tr><td>高速运动</td><td>运动模糊</td><td>无模糊</td><td>帧率较低</td></tr>
+                        <tr><td>细小障碍物</td><td>识别率<60%</td><td>边缘检测好</td><td>温差小难识别</td></tr>
+                        <tr><td>功耗</td><td>低(1-2W)</td><td>极低(50mW)</td><td>中高(3-5W)</td></tr>
+                        <tr><td>成本</td><td>$10-50</td><td>$100-300</td><td>$500-2000</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>激光雷达限制</h4>
+                <ul>
+                    <li>机械式 LiDAR：体积大（直径 > 100mm）、重量重（>500g）、寿命短（旋转部件）。</li>
+                    <li>固态 LiDAR：视场角小（<120°）、探测距离短（<50m）、成本高（>$1000）。</li>
+                    <li>点云稀疏性：远距离点云密度 < 1 点 /m²，细小障碍物漏检率高。</li>
+                </ul>
+
+                <h4>毫米波雷达挑战</h4>
+                <ul>
+                    <li>角度分辨率低：典型 3-5°，难以区分密集障碍物。</li>
+                    <li>高度信息缺失：2D 雷达无法检测悬空电线。</li>
+                    <li>多径干扰：城市环境虚假目标多。</li>
+                </ul>
+
+                <h3>2. 算法层面问题</h3>
+                <h4>深度学习模型缺陷</h4>
+                <div class="code-block">
+<pre>class ObstacleDetectionLimitations:
+    def __init__(self):
+        self.problems = {
+            'scale_variation': '同一目标距离变化导致尺度变化100倍',
+            'occlusion': '障碍物部分遮挡时识别率下降>40%',
+            'domain_shift': '训练数据与真实环境分布差异',
+            'real_time_constraint': '推理时间>50ms影响避障响应',
+            'computational_cost': '模型参数量>10M，边缘设备部署难'
+        }
+    
+    def failure_cases(self):
+        return [
+            '电线识别率：晴天85%，阴天60%，雾天<30%',
+            '透明玻璃：传统传感器穿透/反射导致漏检',
+            '动态障碍物：鸟类预测轨迹误差>2m',
+            '地面阴影：误识别为障碍物'
+        ]</pre>
+                </div>
+
+                <h4>SLAM 系统问题</h4>
+                <ul>
+                    <li>视觉里程计漂移：长距离累积误差可达 10%-20%。</li>
+                    <li>回环检测失效：相似场景误匹配，季节变化重定位失败。</li>
+                    <li>动态场景处理：移动物体污染地图，需实时剔除。</li>
+                </ul>
+            </section>
+
+            <section class="sense-section">
+                <h2>二、多传感器融合解决方案</h2>
+                <h3>1. 异构传感器深度融合架构</h3>
+                <div class="diagram">┌─────────────────────────────────────────────────────┐
+│                决策层融合                            │
+│  - 多模态置信度加权                                 │
+│  - 冲突检测与解决                                   │
+│  - 故障诊断与恢复                                   │
+├─────────────────────────────────────────────────────┤
+│                特征层融合                            │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐               │
+│  │ 视觉    │ │ 激光    │ │ 毫米波  │               │
+│  │ 特征提取│ │ 点云    │ │ 点迹    │               │
+│  └─────────┘ └─────────┘ └─────────┘               │
+│         │           │           │                   │
+│         └─────┬─────┴─────┬─────┘                   │
+│               ▼           ▼                         │
+│        ┌─────────────────────┐                     │
+│        │  跨模态特征对齐     │                     │
+│        │  - 时空标定        │                     │
+│        │  - 特征关联        │                     │
+│        └─────────────────────┘                     │
+├─────────────────────────────────────────────────────┤
+│                数据层融合                            │
+│  - 时间同步：硬件触发+PTP                           │
+│  - 空间标定：自动标定算法                           │
+│  - 数据预处理：去噪、补偿、对齐                     │
+└─────────────────────────────────────────────────────┘</div>
+
+                <h3>2. 自适应融合策略</h3>
+                <div class="code-block">
+<pre>class AdaptiveSensorFusion:
+    def __init__(self):
+        self.sensors = {
+            'camera': {'confidence': 0.8, 'weight': 0.4},
+            'lidar': {'confidence': 0.9, 'weight': 0.3},
+            'radar': {'confidence': 0.7, 'weight': 0.2},
+            'ultrasonic': {'confidence': 0.6, 'weight': 0.1}
+        }
+        self.environment_conditions = {}
+    
+    def update_weights(self, environment):
+        """基于环境条件自适应调整传感器权重"""
+        conditions = {
+            'lighting': self.assess_lighting(environment),
+            'weather': self.assess_weather(environment),
+            'obstacle_density': self.assess_density(environment),
+            'speed': self.get_current_speed()
+        }
+        if conditions['lighting'] == 'low':
+            self.sensors['camera']['weight'] *= 0.5
+            self.sensors['lidar']['weight'] *= 1.2
+            self.sensors['radar']['weight'] *= 1.3
+        if conditions['weather'] == 'foggy':
+            self.sensors['lidar']['weight'] *= 0.7
+            self.sensors['radar']['weight'] *= 1.5
+        if conditions['speed'] > 15:
+            self.sensors['radar']['weight'] *= 1.4
+            self.sensors['camera']['weight'] *= 0.8
+        self.normalize_weights()
+        return self.sensors
+    
+    def fuse_detections(self, sensor_data):
+        """多传感器检测结果融合"""
+        fused_obstacles = []
+        for obstacle_class in ['static', 'dynamic', 'small']:
+            detections = self.collect_detections(sensor_data, obstacle_class)
+            fused_detection = self.weighted_fusion(detections)
+            if self.check_consistency(fused_detection):
+                fused_obstacles.append(fused_detection)
+        return fused_obstacles</pre>
+                </div>
+
+                <h3>3. 新型传感器技术应用</h3>
+                <ul>
+                    <li>事件相机优势：微秒级延迟：传统相机 33ms vs 事件相机 1ms；高动态范围：140dB vs 传统相机 60dB；低功耗：50mW vs 传统相机 1W。</li>
+                    <li>4D 毫米波雷达突破：高程分辨率可达 0.5°，检测悬空电线；点云密度 >1000 点 / 帧，接近低线束 LiDAR；成本 <$200，适合大规模应用。</li>
+                </ul>
+            </section>
+
+            <section class="sense-section">
+                <h2>三、智能避障算法体系</h2>
+                <h3>1. 分层避障架构</h3>
+                <div class="diagram">┌─────────────────────────────────────────┐
+│        战略层规划 (10-100m)             │
+│  - 全局路径重规划                       │
+│  - 风险区域评估                         │
+│  - 任务级决策                           │
+├─────────────────────────────────────────┤
+│        战术层避障 (5-20m)               │
+│  - 局部路径优化                         │
+│  - 动态障碍物预测                       │
+│  - 避障机动选择                         │
+├─────────────────────────────────────────┤
+│        反应层避障 (0-5m)                │
+│  - 紧急制动/转向                        │
+│  - 最后时刻避撞                         │
+│  - 硬件级快速响应                       │
+└─────────────────────────────────────────┘</div>
+
+                <h3>2. 基于深度学习的感知算法</h3>
+                <div class="code-block">
+<pre>class LightweightObstacleDetector:
+    def __init__(self):
+        self.model = MultiTaskNetwork(
+            backbone='MobileNetV3',
+            tasks=[
+                'semantic_segmentation',
+                'object_detection',
+                'depth_estimation',
+                'optical_flow'
+            ]
+        )
+        self.optimizations = {
+            'quantization': 'INT8量化，加速2-3倍',
+            'pruning': '结构化剪枝，减少参数40%',
+            'knowledge_distillation': '大模型蒸馏到小模型',
+            'neural_architecture_search': '自动搜索最优架构'
+        }
+    
+    def detect_obstacles(self, sensor_data):
+        features = self.extract_multi_scale_features(sensor_data)
+        attention_map = self.compute_attention(features)
+        results = {}
+        for task in self.model.tasks:
+            if task == 'semantic_segmentation':
+                results['segmentation'] = self.segment_obstacles(features)
+            elif task == 'object_detection':
+                results['detection'] = self.detect_objects(features)
+        final_obstacles = self.fuse_results(results, attention_map)
+        return final_obstacles</pre>
+                </div>
+                <h4>长尾场景处理技术</h4>
+                <ul>
+                    <li>增量学习：在线学习新障碍物类别。</li>
+                    <li>元学习：快速适应新环境。</li>
+                    <li>合成数据生成：模拟极端天气、罕见障碍物。</li>
+                    <li>不确定性估计：输出置信度，高风险时保守决策。</li>
+                </ul>
+
+                <h3>3. 运动规划算法</h3>
+                <div class="code-block">
+<pre>class TrajectoryOptimizer:
+    def __init__(self):
+        self.constraints = {
+            'dynamics': '无人机动力学约束',
+            'obstacles': '避障安全距离约束',
+            'smoothness': '轨迹平滑性约束',
+            'energy': '能耗优化约束'
+        }
+    
+    def plan_trajectory(self, start, goal, obstacles):
+        trajectory = self.initialize_trajectory(start, goal)
+        for iteration in range(max_iterations):
+            cost = self.compute_cost(trajectory, obstacles)
+            gradient = self.compute_gradient(trajectory)
+            trajectory = self.update_trajectory(trajectory, gradient)
+            trajectory = self.enforce_constraints(trajectory)
+            if self.check_convergence(cost):
+                break
+        return trajectory
+    
+    def compute_cost(self, trajectory, obstacles):
+        cost_terms = {
+            'obstacle_cost': self.obstacle_avoidance_cost(trajectory, obstacles),
+            'smoothness_cost': self.trajectory_smoothness_cost(trajectory),
+            'energy_cost': self.energy_consumption_cost(trajectory),
+            'time_cost': self.time_optimal_cost(trajectory)
+        }
+        total_cost = sum(weight * cost for weight, cost in cost_terms.items())
+        return total_cost</pre>
+                </div>
+                <h4>强化学习避障策略</h4>
+                <ul>
+                    <li>状态空间 S = [无人机状态, 环境感知, 障碍物信息]</li>
+                    <li>动作空间 A = [速度指令, 航向指令, 高度指令]</li>
+                    <li>奖励函数 R = + 成功避障奖励 - 接近障碍物惩罚 - 能量消耗惩罚 - 轨迹不平滑惩罚 + 任务完成奖励。</li>
+                </ul>
+            </section>
+
+            <section class="sense-section">
+                <h2>四、自主智能系统架构</h2>
+                <div class="diagram">┌─────────────────────────────────────────┐
+│        认知层 (Perception)              │
+│  - 环境感知与理解                       │
+│  - 状态估计与定位                       │
+│  - 场景语义理解                         │
+├─────────────────────────────────────────┤
+│        决策层 (Decision Making)         │
+│  - 任务规划与分解                       │
+│  - 行为决策与选择                       │
+│  - 风险评估与管理                       │
+├─────────────────────────────────────────┤
+│        执行层 (Execution)               │
+│  - 运动规划与控制                       │
+│  - 执行监控与调整                       │
+│  - 异常处理与恢复                       │
+└─────────────────────────────────────────┘</div>
+
+                <h3>1. 认知 - 决策 - 执行三层架构</h3>
+                <div class="code-block">
+<pre>class AutonomousMissionSystem:
+    def __init__(self):
+        self.mission_planner = MissionPlanner()
+        self.task_decomposer = TaskDecomposer()
+        self.execution_monitor = ExecutionMonitor()
+        self.fault_handler = FaultHandler()
+    
+    def execute_mission(self, mission_spec):
+        mission_plan = self.mission_planner.plan(mission_spec)
+        tasks = self.task_decomposer.decompose(mission_plan)
+        for task in tasks:
+            self.prepare_for_task(task)
+            while not task.is_complete():
+                perception_data = self.perceive_environment()
+                current_state = self.assess_state(perception_data)
+                decision = self.make_decision(current_state, task)
+                control_command = self.generate_control(decision)
+                self.execute_control(control_command)
+                if self.execution_monitor.detect_anomaly():
+                    recovery_action = self.fault_handler.handle_anomaly()
+                    self.execute_recovery(recovery_action)
+                task.update_progress()
+        return mission_complete
+    
+    def make_decision(self, state, task):
+        decision_factors = {
+            'safety': self.evaluate_safety(state),
+            'efficiency': self.evaluate_efficiency(state, task),
+            'energy': self.evaluate_energy_state(),
+            'reliability': self.evaluate_reliability(state)
+        }
+        if decision_factors['safety'] < safety_threshold:
+            return self.safety_first_decision(state)
+        elif task.type == 'optimization_task':
+            return self.optimization_based_decision(state, task)
+        else:
+            return self.learning_based_decision(state, task)</pre>
+                </div>
+
+                <h3>2. 故障自主处置系统</h3>
+                <p>故障诊断与分类：</p>
+                <table class="sense-table">
+                    <thead>
+                        <tr>
+                            <th>故障类别</th>
+                            <th>检测方法</th>
+                            <th>处置策略</th>
+                            <th>恢复成功率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>传感器故障</td><td>一致性检验</td><td>传感器切换</td><td>>95%</td></tr>
+                        <tr><td>执行器故障</td><td>电流/转速监测</td><td>控制重分配</td><td>85-90%</td></tr>
+                        <tr><td>通信故障</td><td>心跳包丢失</td><td>中继/自主返航</td><td>>90%</td></tr>
+                        <tr><td>能源故障</td><td>电压/电流监测</td><td>节能模式返航</td><td>80-85%</td></tr>
+                        <tr><td>环境异常</td><td>多传感器交叉</td><td>避障/悬停</td><td>70-80%</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>自主恢复策略</h4>
+                <ul>
+                    <li>降级运行：部分功能失效时继续执行核心任务。</li>
+                    <li>安全模式：进入最小风险状态。</li>
+                    <li>渐进恢复：逐步恢复功能，验证每一步。</li>
+                    <li>学习改进：记录故障场景，优化应对策略。</li>
+                </ul>
+            </section>
+
+            <section class="sense-section">
+                <h2>五、测试验证与安全保障</h2>
+                <h3>1. 多层次测试体系</h3>
+                <div class="diagram">┌─────────────────────────────────────────┐
+│        实飞测试 (5%)                    │
+│  - 真实环境验证                         │
+│  - 极端条件测试                         │
+│  - 人机交互测试                         │
+├─────────────────────────────────────────┤
+│        硬件在环测试 (15%)               │
+│  - 传感器模拟                           │
+│  - 执行器测试                           │
+│  - 故障注入测试                         │
+├─────────────────────────────────────────┤
+│        软件在环测试 (30%)               │
+│  - 算法性能测试                         │
+│  - 系统集成测试                         │
+│  - 边界条件测试                         │
+├─────────────────────────────────────────┤
+│        仿真测试 (50%)                   │
+│  - 大规模场景测试                       │
+│  - 极端情况模拟                         │
+│  - 蒙特卡洛测试                         │
+└─────────────────────────────────────────┘</div>
+
+                <h3>2. 安全认证框架</h3>
+                <p>功能安全标准：</p>
+                <ul>
+                    <li>ISO 21384-3：无人机系统操作安全要求</li>
+                    <li>DO-178C：机载软件适航认证</li>
+                    <li>ISO 26262：功能安全（Adapted for UAV）</li>
+                    <li>UL 3030：无人机系统安全标准</li>
+                </ul>
+
+                <div class="code-block">
+<pre>class SafetyMonitor:
+    def __init__(self):
+        self.safety_zones = {
+            'keep_out_zone': [],
+            'warning_zone': [],
+            'safety_buffer': 3.0
+        }
+        self.safety_rules = SafetyRuleEngine()
+    
+    def monitor_safety(self, drone_state, environment):
+        geo_fence_violation = self.check_geo_fence(drone_state.position)
+        obstacle_proximity = self.check_obstacle_distance(
+            drone_state.position,
+            environment.obstacles
+        )
+        flight_status = self.check_flight_status(drone_state)
+        risk_level = self.assess_risk(
+            geo_fence_violation,
+            obstacle_proximity,
+            flight_status
+        )
+        if risk_level == 'HIGH':
+            return self.trigger_emergency_protocol()
+        elif risk_level == 'MEDIUM':
+            return self.initiate_preventive_action()
+        else:
+            return self.continue_normal_operation()</pre>
+                </div>
+            </section>
+
+            <section class="sense-section">
+                <h2>六、技术发展路线图</h2>
+                <h4>短期突破（1-2 年）</h4>
+                <ul>
+                    <li>传感器融合成熟。</li>
+                    <li>4D 毫米波雷达成本降至 $100 以内。</li>
+                    <li>事件相机量产，成本 <$200。</li>
+                    <li>多传感器标定自动化。</li>
+                    <li>轻量化检测模型参数量 < 5M。</li>
+                    <li>避障响应时间 < 100ms。</li>
+                    <li>细小障碍物识别率 > 90%。</li>
+                </ul>
+
+                <h4>中期发展（3-5 年）</h4>
+                <ul>
+                    <li>自主能力提升，复杂环境完全自主飞行。</li>
+                    <li>动态障碍物预测准确率 > 85%。</li>
+                    <li>多机协同避障。</li>
+                    <li>AI 芯片集成，算力 > 10TOPS，功耗 < 5W。</li>
+                    <li>端侧学习能力。</li>
+                    <li>安全认证的 AI 加速器。</li>
+                </ul>
+
+                <h4>长期愿景（5-10 年）</h4>
+                <ul>
+                    <li>认知智能：场景理解与推理能力。</li>
+                    <li>意图识别与预测。</li>
+                    <li>自适应学习与进化。</li>
+                    <li>群体智能：大规模自主协同。</li>
+                    <li>分布式感知与决策。</li>
+                    <li>自组织抗干扰。</li>
+                </ul>
+            </section>
+
+            <section class="sense-section">
+                <h2>七、商业化应用建议</h2>
+                <h4>行业定制化方案</h4>
+                <h5>1. 物流配送场景</h5>
+                <p>城市物流避障需求：</p>
+                <ul>
+                    <li>静态障碍物：建筑、树木、电线。</li>
+                    <li>动态障碍物：车辆、行人、其他无人机。</li>
+                    <li>环境挑战：天气变化、光线变化。</li>
+                    <li>操作要求：避障距离水平3m，垂直5m；响应时间 < 200ms；可靠性 > 99.9%；成本目标 <$500/套。</li>
+                </ul>
+
+                <h5>2. 电力巡检方案</h5>
+                <ul>
+                    <li>强电磁环境：抗干扰传感器配置。</li>
+                    <li>近距离避障：毫米波 + 视觉融合，检测 5mm 电线。</li>
+                    <li>自主跟踪：导线自动识别与跟踪。</li>
+                    <li>安全距离：动态调整，最小 0.5m。</li>
+                </ul>
+
+                <h5>3. 农业植保优化</h5>
+                <ul>
+                    <li>超低空飞行：地形跟随，避障高度 0.5-2m。</li>
+                    <li>作物识别：区分作物与障碍物。</li>
+                    <li>变量避障：根据作物高度调整避障参数。</li>
+                </ul>
+
+                <h4>成本效益分析</h4>
+                <table class="sense-table">
+                    <thead>
+                        <tr>
+                            <th>配置方案</th>
+                            <th>传感器组合</th>
+                            <th>成本增加</th>
+                            <th>效益提升</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>基础型</td><td>单目视觉</td><td>基准</td><td>避障率70%</td></tr>
+                        <tr><td>增强型</td><td>双目+超声波</td><td>+$200</td><td>避障率85%</td></tr>
+                        <tr><td>专业型</td><td>视觉+激光</td><td>+$800</td><td>避障率95%</td></tr>
+                        <tr><td>工业级</td><td>多传感器融合</td><td>+$1500</td><td>避障率99%</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>ROI 计算</h4>
+                <ul>
+                    <li>减少撞机损失：每次事故 $500-$5000。</li>
+                    <li>提高作业效率：减少人工干预时间 20-30%。</li>
+                    <li>扩展应用场景：进入高风险高价值领域。</li>
+                    <li>保险费用降低：安全记录好的无人机保费低 30-50%。</li>
+                </ul>
+            </section>
+
+            <div class="sense-footer">
+                <a href="首页.html" class="back-link">← 返回首页</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

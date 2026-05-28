@@ -1,0 +1,1917 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理 - 无人机控制系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础变量和重置 */
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #7209b7;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --info-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 容器布局 */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            background: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: var(--secondary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        /* 主导航栏 */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            overflow-x: auto;
+        }
+
+        .nav-item {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            text-decoration: none;
+            color: var(--gray-color);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 页面标题区域 */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 设备统计概览 */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 操作栏 */
+        .action-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-add-device {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-device:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            width: 300px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* 设备网格 */
+        .devices-container {
+            margin-bottom: 3rem;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            border-top: 4px solid transparent;
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .device-card.online {
+            border-top-color: var(--success-color);
+        }
+
+        .device-card.offline {
+            border-top-color: var(--danger-color);
+        }
+
+        .device-card.maintenance {
+            border-top-color: var(--warning-color);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .device-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .device-sn {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+        }
+
+        .device-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-offline {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-maintenance {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+
+        .device-info {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .device-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+
+        .btn-details {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-details:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-connect {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-connect:hover {
+            background: #3db8d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-maintenance {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-maintenance:hover {
+            background: #e6891e;
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #e11575;
+            transform: translateY(-2px);
+        }
+
+        /* 维护计划 */
+        .maintenance-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .maintenance-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .maintenance-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .maintenance-item:hover {
+            background: #e9ecef;
+        }
+
+        .maintenance-date {
+            min-width: 120px;
+            text-align: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+            margin-right: 1rem;
+        }
+
+        .date-day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .date-month {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+            text-transform: uppercase;
+        }
+
+        .maintenance-info {
+            flex: 1;
+        }
+
+        .maintenance-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .maintenance-desc {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .maintenance-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-color);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.95rem;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            color: var(--gray-color);
+            cursor: pointer;
+            transition: var(--transition);
+            line-height: 1;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: var(--dark-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 0.75rem;
+            background: #f0f0f0;
+            color: var(--dark-color);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .devices-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .search-input:focus {
+                width: 100%;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .nav-menu {
+                padding: 0 1rem;
+                overflow-x: auto;
+            }
+            
+            .nav-item {
+                flex: 0 0 auto;
+            }
+            
+            .maintenance-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .maintenance-date {
+                margin-right: 0;
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+            
+            .maintenance-actions {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            font-weight: 500;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            background: var(--success-color);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.info {
+            background: var(--info-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="top-nav">
+            <div class="nav-container">
+                <a href="首页.html" class="logo">
+                    <i class="fas fa-drone logo-icon"></i>
+                    <span>无人机控制系统</span>
+                </a>
+                <div class="user-actions">
+                    <a href="首页.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        返回首页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主导航栏 -->
+        <nav class="main-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html" class="nav-link">
+                        <i class="fas fa-wifi nav-icon"></i>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html" class="nav-link">
+                        <i class="fas fa-map-marked-alt nav-icon"></i>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html" class="nav-link">
+                        <i class="fas fa-gamepad nav-icon"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html" class="nav-link">
+                        <i class="fas fa-tasks nav-icon"></i>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html" class="nav-link">
+                        <i class="fas fa-plane nav-icon"></i>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="客服.html" class="nav-link">
+                        <i class="fas fa-headset nav-icon"></i>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="设备管理.html" class="nav-link active">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <span class="nav-text">设备管理</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-cogs"></i> 无人机设备管理
+                </h1>
+                <p class="page-subtitle">管理您的所有无人机设备，监控状态和维护计划</p>
+            </div>
+
+            <!-- 设备统计概览 -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-drone"></i>
+                    </div>
+                    <div class="stat-value" id="totalDevices">0</div>
+                    <div class="stat-label">总设备数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-signal"></i>
+                    </div>
+                    <div class="stat-value" id="onlineDevices">0</div>
+                    <div class="stat-label">在线设备</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-value" id="maintenanceDevices">0</div>
+                    <div class="stat-label">维护中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="stat-value" id="totalFlightHours">0</div>
+                    <div class="stat-label">总飞行时长(h)</div>
+                </div>
+            </div>
+
+            <!-- 操作栏 -->
+            <div class="action-bar">
+                <div class="action-group">
+                    <button class="btn-add-device" id="addDeviceBtn">
+                        <i class="fas fa-plus-circle"></i> 添加新设备
+                    </button>
+                </div>
+                <div class="action-group">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="searchInput" placeholder="搜索设备...">
+                    </div>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">全部状态</option>
+                        <option value="online">在线</option>
+                        <option value="offline">离线</option>
+                        <option value="maintenance">维护中</option>
+                    </select>
+                    <select class="filter-select" id="typeFilter">
+                        <option value="all">全部类型</option>
+                        <option value="dji">DJI</option>
+                        <option value="autel">Autel</option>
+                        <option value="parrot">Parrot</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 设备列表 -->
+            <div class="devices-container">
+                <div class="devices-grid" id="devicesGrid">
+                    <!-- 设备卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <!-- 维护计划 -->
+            <div class="maintenance-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-alt"></i> 维护计划
+                    </h2>
+                    <button class="btn-secondary" id="addMaintenanceBtn">
+                        <i class="fas fa-plus"></i> 添加维护计划
+                    </button>
+                </div>
+                <div class="maintenance-list" id="maintenanceList">
+                    <!-- 维护计划将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </main>
+
+        <!-- 添加/编辑设备模态框 -->
+        <div class="modal" id="deviceModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">添加新设备</h2>
+                    <button class="close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <form id="deviceForm">
+                    <input type="hidden" id="deviceId">
+                    
+                    <div class="form-group">
+                        <label for="deviceName" class="form-label">设备名称 *</label>
+                        <input type="text" id="deviceName" class="form-control" required placeholder="请输入设备名称">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deviceType" class="form-label">设备品牌</label>
+                            <select id="deviceType" class="form-control">
+                                <option value="dji">大疆 DJI</option>
+                                <option value="autel">道通 Autel</option>
+                                <option value="parrot">派诺特 Parrot</option>
+                                <option value="skydio">Skydio</option>
+                                <option value="other">其他品牌</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="deviceModel" class="form-label">设备型号 *</label>
+                            <input type="text" id="deviceModel" class="form-control" required placeholder="例如：Mavic 3 Pro">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceSN" class="form-label">序列号 *</label>
+                        <input type="text" id="deviceSN" class="form-control" required placeholder="请输入设备序列号">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceStatus" class="form-label">设备状态</label>
+                        <select id="deviceStatus" class="form-control">
+                            <option value="online">在线</option>
+                            <option value="offline">离线</option>
+                            <option value="maintenance">维护中</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="purchaseDate" class="form-label">购买日期</label>
+                            <input type="date" id="purchaseDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyMonths" class="form-label">保修期(月)</label>
+                            <input type="number" id="warrantyMonths" class="form-control" min="0" placeholder="例如：12">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceNotes" class="form-label">备注信息</label>
+                        <textarea id="deviceNotes" class="form-control" rows="3" placeholder="请输入设备备注信息..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="cancelBtn">取消</button>
+                        <button type="submit" class="btn-submit">保存设备</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 添加维护计划模态框 -->
+        <div class="modal" id="maintenanceModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">添加维护计划</h2>
+                    <button class="close-btn" id="closeMaintenanceModalBtn">&times;</button>
+                </div>
+                <form id="maintenanceForm">
+                    <div class="form-group">
+                        <label for="maintenanceDevice" class="form-label">选择设备 *</label>
+                        <select id="maintenanceDevice" class="form-control" required>
+                            <!-- 设备选项将通过JavaScript动态生成 -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maintenanceDate" class="form-label">维护日期 *</label>
+                        <input type="date" id="maintenanceDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maintenanceType" class="form-label">维护类型 *</label>
+                        <select id="maintenanceType" class="form-control" required>
+                            <option value="routine">例行检查</option>
+                            <option value="repair">维修保养</option>
+                            <option value="upgrade">固件升级</option>
+                            <option value="battery">电池更换</option>
+                            <option value="other">其他维护</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maintenanceDescription" class="form-label">维护描述 *</label>
+                        <textarea id="maintenanceDescription" class="form-control" rows="3" required placeholder="请输入维护描述..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="cancelMaintenanceBtn">取消</button>
+                        <button type="submit" class="btn-submit">保存计划</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>无人机控制系统 - 专业的无人机控制与管理平台</p>
+                    <p>提供全方位的无人机设备管理解决方案</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="首页.html">首页</a></li>
+                        <li><a href="连接.html">设备连接</a></li>
+                        <li><a href="控制台.html">控制台</a></li>
+                        <li><a href="客服.html">客服中心</a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p><i class="fas fa-envelope"></i> support@dronecontrol.com</p>
+                    <p><i class="fas fa-phone"></i> 400-888-9999</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 北京市朝阳区科技园</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 无人机控制系统. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 无人机设备管理系统
+        class DeviceManager {
+            constructor() {
+                this.devices = [];
+                this.maintenancePlans = [];
+                this.editingDeviceId = null;
+                this.init();
+            }
+
+            // 初始化
+            init() {
+                this.loadData();
+                this.bindEvents();
+                this.renderDevices();
+                this.renderMaintenancePlans();
+                this.updateStats();
+            }
+
+            // 绑定事件
+            bindEvents() {
+                // 添加设备按钮
+                document.getElementById('addDeviceBtn').addEventListener('click', () => this.openDeviceModal());
+                
+                // 添加维护计划按钮
+                document.getElementById('addMaintenanceBtn').addEventListener('click', () => this.openMaintenanceModal());
+                
+                // 关闭模态框按钮
+                document.getElementById('closeModalBtn').addEventListener('click', () => this.closeDeviceModal());
+                document.getElementById('cancelBtn').addEventListener('click', () => this.closeDeviceModal());
+                document.getElementById('closeMaintenanceModalBtn').addEventListener('click', () => this.closeMaintenanceModal());
+                document.getElementById('cancelMaintenanceBtn').addEventListener('click', () => this.closeMaintenanceModal());
+                
+                // 表单提交
+                document.getElementById('deviceForm').addEventListener('submit', (e) => this.saveDevice(e));
+                document.getElementById('maintenanceForm').addEventListener('submit', (e) => this.saveMaintenancePlan(e));
+                
+                // 搜索和筛选
+                document.getElementById('searchInput').addEventListener('input', () => this.filterDevices());
+                document.getElementById('statusFilter').addEventListener('change', () => this.filterDevices());
+                document.getElementById('typeFilter').addEventListener('change', () => this.filterDevices());
+                
+                // 点击模态框外部关闭
+                document.getElementById('deviceModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('deviceModal')) {
+                        this.closeDeviceModal();
+                    }
+                });
+                
+                document.getElementById('maintenanceModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('maintenanceModal')) {
+                        this.closeMaintenanceModal();
+                    }
+                });
+            }
+
+            // 从本地存储加载数据
+            loadData() {
+                const savedDevices = localStorage.getItem('droneDevices');
+                const savedMaintenance = localStorage.getItem('droneMaintenance');
+                
+                if (savedDevices) {
+                    this.devices = JSON.parse(savedDevices);
+                } else {
+                    // 初始化示例设备
+                    this.devices = [
+                        {
+                            id: 'DEV001',
+                            name: 'DJI Mavic 3 Pro',
+                            type: 'dji',
+                            model: 'Mavic 3 Pro',
+                            sn: 'DJI-M3P-2026-001',
+                            status: 'online',
+                            battery: 87,
+                            flightCount: 42,
+                            totalHours: 128,
+                            totalDistance: 2.3,
+                            purchaseDate: '2026-01-15',
+                            warrantyMonths: 12,
+                            notes: '主要设备，用于高精度测绘任务',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 'DEV002',
+                            name: 'DJI Air 3',
+                            type: 'dji',
+                            model: 'Air 3',
+                            sn: 'DJI-A3-2026-002',
+                            status: 'offline',
+                            battery: 0,
+                            flightCount: 28,
+                            totalHours: 86,
+                            totalDistance: 1.7,
+                            purchaseDate: '2026-02-20',
+                            warrantyMonths: 12,
+                            notes: '备用设备，目前处于充电状态',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 'DEV003',
+                            name: 'DJI Mini 4 Pro',
+                            type: 'dji',
+                            model: 'Mini 4 Pro',
+                            sn: 'DJI-M4P-2026-003',
+                            status: 'maintenance',
+                            battery: 15,
+                            flightCount: 67,
+                            totalHours: 210,
+                            totalDistance: 4.1,
+                            purchaseDate: '2025-11-10',
+                            warrantyMonths: 12,
+                            notes: '需要更换螺旋桨，正在进行维护',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 'DEV004',
+                            name: 'Autel EVO II',
+                            type: 'autel',
+                            model: 'EVO II',
+                            sn: 'AUT-E2-2026-004',
+                            status: 'online',
+                            battery: 92,
+                            flightCount: 15,
+                            totalHours: 45,
+                            totalDistance: 0.8,
+                            purchaseDate: '2026-03-05',
+                            warrantyMonths: 24,
+                            notes: '新设备，主要用于夜间拍摄',
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+                    this.saveDevicesToStorage();
+                }
+                
+                if (savedMaintenance) {
+                    this.maintenancePlans = JSON.parse(savedMaintenance);
+                } else {
+                    // 初始化示例维护计划
+                    this.maintenancePlans = [
+                        {
+                            id: 'MAINT001',
+                            deviceId: 'DEV003',
+                            deviceName: 'DJI Mini 4 Pro',
+                            date: this.getDateString(15), // 15天后
+                            type: 'routine',
+                            description: '更换螺旋桨，检查电机状态',
+                            status: 'pending'
+                        },
+                        {
+                            id: 'MAINT002',
+                            deviceId: 'DEV002',
+                            deviceName: 'DJI Air 3',
+                            date: this.getDateString(20), // 20天后
+                            type: 'upgrade',
+                            description: '升级至最新固件版本V2.5.0',
+                            status: 'pending'
+                        }
+                    ];
+                    this.saveMaintenanceToStorage();
+                }
+            }
+
+            // 获取未来日期的字符串
+            getDateString(daysFromNow) {
+                const date = new Date();
+                date.setDate(date.getDate() + daysFromNow);
+                return date.toISOString().split('T')[0];
+            }
+
+            // 保存设备到本地存储
+            saveDevicesToStorage() {
+                localStorage.setItem('droneDevices', JSON.stringify(this.devices));
+            }
+
+            // 保存维护计划到本地存储
+            saveMaintenanceToStorage() {
+                localStorage.setItem('droneMaintenance', JSON.stringify(this.maintenancePlans));
+            }
+
+            // 渲染设备列表
+            renderDevices(filteredDevices = null) {
+                const grid = document.getElementById('devicesGrid');
+                const devicesToRender = filteredDevices || this.devices;
+
+                if (devicesToRender.length === 0) {
+                    grid.innerHTML = this.createEmptyState('设备');
+                    return;
+                }
+
+                grid.innerHTML = devicesToRender.map(device => this.createDeviceCard(device)).join('');
+            }
+
+            // 创建空状态
+            createEmptyState(type) {
+                return `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <div class="empty-text">暂无${type}</div>
+                        <div class="empty-subtext">点击"添加新${type}"开始添加</div>
+                    </div>
+                `;
+            }
+
+            // 创建设备卡片
+            createDeviceCard(device) {
+                const typeMap = {
+                    dji: '大疆 DJI',
+                    autel: '道通 Autel',
+                    parrot: '派诺特 Parrot',
+                    skydio: 'Skydio',
+                    other: '其他品牌'
+                };
+
+                const statusText = {
+                    'online': '在线',
+                    'offline': '离线',
+                    'maintenance': '维护中'
+                };
+
+                const statusClass = {
+                    'online': 'status-online',
+                    'offline': 'status-offline',
+                    'maintenance': 'status-maintenance'
+                };
+
+                const batteryColor = device.battery > 50 ? 'var(--success-color)' : 
+                                   device.battery > 20 ? 'var(--warning-color)' : 
+                                   'var(--danger-color)';
+
+                return `
+                    <div class="device-card ${device.status}">
+                        <div class="device-header">
+                            <div>
+                                <div class="device-title">${device.name}</div>
+                                <div class="device-sn">${device.sn}</div>
+                            </div>
+                            <span class="device-status ${statusClass[device.status]}">${statusText[device.status]}</span>
+                        </div>
+                        
+                        <div class="device-info">
+                            <div><i class="fas fa-tag"></i> ${typeMap[device.type] || device.type} - ${device.model}</div>
+                            ${device.purchaseDate ? `<div><i class="far fa-calendar"></i> 购买日期: ${new Date(device.purchaseDate).toLocaleDateString('zh-CN')}</div>` : ''}
+                        </div>
+                        
+                        <div class="device-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: ${batteryColor}">${device.battery || 0}%</div>
+                                <div class="stat-label">电量</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${device.flightCount || 0}</div>
+                                <div class="stat-label">飞行次数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${device.totalHours || 0}h</div>
+                                <div class="stat-label">总时长</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${device.totalDistance || 0}k</div>
+                                <div class="stat-label">总距离(km)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="device-actions">
+                            ${this.getDeviceActionButtons(device)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 获取设备操作按钮
+            getDeviceActionButtons(device) {
+                let buttons = '';
+                
+                // 详情按钮
+                buttons += `
+                    <button class="action-btn btn-details" onclick="deviceManager.viewDevice('${device.id}')">
+                        <i class="fas fa-eye"></i> 查看
+                    </button>
+                `;
+                
+                // 根据状态显示不同按钮
+                if (device.status === 'online') {
+                    buttons += `
+                        <button class="action-btn btn-connect" onclick="deviceManager.connectDevice('${device.id}')">
+                            <i class="fas fa-wifi"></i> 连接
+                        </button>
+                    `;
+                } else if (device.status === 'offline') {
+                    buttons += `
+                        <button class="action-btn btn-connect" onclick="deviceManager.connectDevice('${device.id}')">
+                            <i class="fas fa-power-off"></i> 启动
+                        </button>
+                    `;
+                }
+                
+                // 维护按钮
+                if (device.status !== 'maintenance') {
+                    buttons += `
+                        <button class="action-btn btn-maintenance" onclick="deviceManager.scheduleMaintenance('${device.id}')">
+                            <i class="fas fa-tools"></i> 维护
+                        </button>
+                    `;
+                }
+                
+                // 编辑按钮
+                buttons += `
+                    <button class="action-btn btn-edit" onclick="deviceManager.editDevice('${device.id}')">
+                        <i class="fas fa-edit"></i> 编辑
+                    </button>
+                `;
+                
+                return buttons;
+            }
+
+            // 渲染维护计划
+            renderMaintenancePlans() {
+                const list = document.getElementById('maintenanceList');
+                
+                if (this.maintenancePlans.length === 0) {
+                    list.innerHTML = this.createEmptyState('维护计划');
+                    return;
+                }
+
+                // 按日期排序
+                const sortedPlans = [...this.maintenancePlans].sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                list.innerHTML = sortedPlans.map(plan => this.createMaintenanceItem(plan)).join('');
+            }
+
+            // 创建维护计划项
+            createMaintenanceItem(plan) {
+                const typeText = {
+                    'routine': '例行检查',
+                    'repair': '维修保养',
+                    'upgrade': '固件升级',
+                    'battery': '电池更换',
+                    'other': '其他维护'
+                };
+                
+                const date = new Date(plan.date);
+                const day = date.getDate();
+                const month = date.toLocaleDateString('zh-CN', { month: 'short' });
+                
+                return `
+                    <div class="maintenance-item">
+                        <div class="maintenance-date">
+                            <div class="date-day">${day}</div>
+                            <div class="date-month">${month}</div>
+                        </div>
+                        <div class="maintenance-info">
+                            <div class="maintenance-title">${plan.deviceName} - ${typeText[plan.type]}</div>
+                            <div class="maintenance-desc">${plan.description}</div>
+                        </div>
+                        <div class="maintenance-actions">
+                            <button class="action-btn btn-edit" onclick="deviceManager.editMaintenance('${plan.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-details" onclick="deviceManager.completeMaintenance('${plan.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn btn-delete" onclick="deviceManager.deleteMaintenance('${plan.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 更新统计信息
+            updateStats() {
+                // 总设备数
+                document.getElementById('totalDevices').textContent = this.devices.length;
+                
+                // 在线设备数
+                const onlineDevices = this.devices.filter(d => d.status === 'online').length;
+                document.getElementById('onlineDevices').textContent = onlineDevices;
+                
+                // 维护中设备数
+                const maintenanceDevices = this.devices.filter(d => d.status === 'maintenance').length;
+                document.getElementById('maintenanceDevices').textContent = maintenanceDevices;
+                
+                // 总飞行时长
+                const totalHours = this.devices.reduce((sum, device) => sum + (device.totalHours || 0), 0);
+                document.getElementById('totalFlightHours').textContent = totalHours;
+            }
+
+            // 打开设备模态框
+            openDeviceModal() {
+                this.editingDeviceId = null;
+                document.getElementById('modalTitle').textContent = '添加新设备';
+                document.getElementById('deviceForm').reset();
+                document.getElementById('deviceId').value = '';
+                
+                // 设置默认购买日期为今天
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('purchaseDate').value = today;
+                document.getElementById('warrantyMonths').value = 12;
+                
+                document.getElementById('deviceModal').classList.add('active');
+            }
+
+            // 编辑设备
+            editDevice(deviceId) {
+                const device = this.devices.find(d => d.id === deviceId);
+                if (!device) return;
+
+                this.editingDeviceId = deviceId;
+                document.getElementById('modalTitle').textContent = '编辑设备';
+                document.getElementById('deviceId').value = device.id;
+                document.getElementById('deviceName').value = device.name;
+                document.getElementById('deviceType').value = device.type;
+                document.getElementById('deviceModel').value = device.model;
+                document.getElementById('deviceSN').value = device.sn;
+                document.getElementById('deviceStatus').value = device.status;
+                document.getElementById('purchaseDate').value = device.purchaseDate || '';
+                document.getElementById('warrantyMonths').value = device.warrantyMonths || '';
+                document.getElementById('deviceNotes').value = device.notes || '';
+                
+                document.getElementById('deviceModal').classList.add('active');
+            }
+
+            // 查看设备
+            viewDevice(deviceId) {
+                this.editDevice(deviceId);
+                // 禁用表单字段
+                const formControls = document.querySelectorAll('#deviceForm .form-control');
+                formControls.forEach(control => control.disabled = true);
+                document.querySelector('.btn-submit').style.display = 'none';
+            }
+
+            // 关闭设备模态框
+            closeDeviceModal() {
+                document.getElementById('deviceModal').classList.remove('active');
+                // 重置表单字段状态
+                const formControls = document.querySelectorAll('#deviceForm .form-control');
+                formControls.forEach(control => control.disabled = false);
+                document.querySelector('.btn-submit').style.display = 'block';
+            }
+
+            // 保存设备
+            saveDevice(event) {
+                event.preventDefault();
+
+                const deviceData = {
+                    name: document.getElementById('deviceName').value,
+                    type: document.getElementById('deviceType').value,
+                    model: document.getElementById('deviceModel').value,
+                    sn: document.getElementById('deviceSN').value,
+                    status: document.getElementById('deviceStatus').value,
+                    purchaseDate: document.getElementById('purchaseDate').value,
+                    warrantyMonths: parseInt(document.getElementById('warrantyMonths').value) || 0,
+                    notes: document.getElementById('deviceNotes').value
+                };
+
+                if (this.editingDeviceId) {
+                    // 更新现有设备
+                    const index = this.devices.findIndex(d => d.id === this.editingDeviceId);
+                    if (index !== -1) {
+                        this.devices[index] = { ...this.devices[index], ...deviceData };
+                        this.showNotification('设备更新成功', 'success');
+                    }
+                } else {
+                    // 创建新设备
+                    const newDevice = {
+                        id: 'DEV' + String(this.devices.length + 1).padStart(3, '0'),
+                        ...deviceData,
+                        battery: 100,
+                        flightCount: 0,
+                        totalHours: 0,
+                        totalDistance: 0,
+                        createdAt: new Date().toISOString()
+                    };
+                    this.devices.push(newDevice);
+                    this.showNotification('设备添加成功', 'success');
+                }
+
+                this.saveDevicesToStorage();
+                this.renderDevices();
+                this.updateStats();
+                this.closeDeviceModal();
+            }
+
+            // 连接设备
+            connectDevice(deviceId) {
+                const device = this.devices.find(d => d.id === deviceId);
+                if (!device) return;
+
+                if (device.status === 'offline') {
+                    device.status = 'online';
+                    device.battery = 100;
+                    this.showNotification('设备已启动并连接', 'success');
+                } else {
+                    this.showNotification('正在连接到设备...', 'info');
+                    // 模拟连接过程
+                    setTimeout(() => {
+                        this.showNotification('设备连接成功', 'success');
+                    }, 1000);
+                }
+
+                this.saveDevicesToStorage();
+                this.renderDevices();
+                this.updateStats();
+            }
+
+            // 安排维护
+            scheduleMaintenance(deviceId) {
+                const device = this.devices.find(d => d.id === deviceId);
+                if (!device) return;
+
+                // 打开维护模态框并预选设备
+                this.openMaintenanceModal();
+                setTimeout(() => {
+                    document.getElementById('maintenanceDevice').value = deviceId;
+                }, 100);
+            }
+
+            // 打开维护模态框
+            openMaintenanceModal() {
+                document.getElementById('maintenanceForm').reset();
+                
+                // 设置默认维护日期为7天后
+                const nextWeek = new Date();
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                document.getElementById('maintenanceDate').value = nextWeek.toISOString().split('T')[0];
+                
+                // 填充设备选项
+                const deviceSelect = document.getElementById('maintenanceDevice');
+                deviceSelect.innerHTML = this.devices.map(device => 
+                    `<option value="${device.id}">${device.name} (${device.sn})</option>`
+                ).join('');
+                
+                document.getElementById('maintenanceModal').classList.add('active');
+            }
+
+            // 关闭维护模态框
+            closeMaintenanceModal() {
+                document.getElementById('maintenanceModal').classList.remove('active');
+            }
+
+            // 保存维护计划
+            saveMaintenancePlan(event) {
+                event.preventDefault();
+
+                const deviceId = document.getElementById('maintenanceDevice').value;
+                const device = this.devices.find(d => d.id === deviceId);
+                
+                if (!device) {
+                    this.showNotification('请选择有效的设备', 'error');
+                    return;
+                }
+
+                const planData = {
+                    deviceId: deviceId,
+                    deviceName: device.name,
+                    date: document.getElementById('maintenanceDate').value,
+                    type: document.getElementById('maintenanceType').value,
+                    description: document.getElementById('maintenanceDescription').value,
+                    status: 'pending'
+                };
+
+                // 创建新维护计划
+                const newPlan = {
+                    id: 'MAINT' + String(this.maintenancePlans.length + 1).padStart(3, '0'),
+                    ...planData
+                };
+                
+                this.maintenancePlans.push(newPlan);
+                
+                // 更新设备状态为维护中
+                device.status = 'maintenance';
+                
+                this.saveMaintenanceToStorage();
+                this.saveDevicesToStorage();
+                this.renderMaintenancePlans();
+                this.renderDevices();
+                this.updateStats();
+                this.showNotification('维护计划添加成功', 'success');
+                this.closeMaintenanceModal();
+            }
+
+            // 完成维护
+            completeMaintenance(planId) {
+                const planIndex = this.maintenancePlans.findIndex(p => p.id === planId);
+                if (planIndex === -1) return;
+
+                const plan = this.maintenancePlans[planIndex];
+                const device = this.devices.find(d => d.id === plan.deviceId);
+                
+                if (device) {
+                    device.status = 'online';
+                    device.battery = 100;
+                }
+                
+                // 从维护计划中移除
+                this.maintenancePlans.splice(planIndex, 1);
+                
+                this.saveMaintenanceToStorage();
+                this.saveDevicesToStorage();
+                this.renderMaintenancePlans();
+                this.renderDevices();
+                this.updateStats();
+                this.showNotification('维护已完成，设备已恢复在线状态', 'success');
+            }
+
+            // 删除维护计划
+            deleteMaintenance(planId) {
+                if (confirm('确定要删除此维护计划吗？')) {
+                    this.maintenancePlans = this.maintenancePlans.filter(p => p.id !== planId);
+                    this.saveMaintenanceToStorage();
+                    this.renderMaintenancePlans();
+                    this.showNotification('维护计划已删除', 'success');
+                }
+            }
+
+            // 筛选设备
+            filterDevices() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                const typeFilter = document.getElementById('typeFilter').value;
+
+                let filtered = this.devices;
+
+                // 按状态筛选
+                if (statusFilter !== 'all') {
+                    filtered = filtered.filter(d => d.status === statusFilter);
+                }
+
+                // 按类型筛选
+                if (typeFilter !== 'all') {
+                    filtered = filtered.filter(d => d.type === typeFilter);
+                }
+
+                // 按搜索词筛选
+                if (searchTerm) {
+                    filtered = filtered.filter(d => 
+                        d.name.toLowerCase().includes(searchTerm) ||
+                        d.model.toLowerCase().includes(searchTerm) ||
+                        d.sn.toLowerCase().includes(searchTerm) ||
+                        (d.notes && d.notes.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                this.renderDevices(filtered);
+            }
+
+            // 显示通知
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // 页面加载完成后初始化设备管理器
+        let deviceManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            deviceManager = new DeviceManager();
+        });
+    </script>
+</body>
+</html>

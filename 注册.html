@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .register-page {
+            min-height: calc(100vh - 130px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .register-box {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .register-box h2 {
+            margin-bottom: 18px;
+            color: #333;
+            text-align: center;
+        }
+
+        .text-note {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+        }
+
+        .login-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <a class="btn-login" href="登录.html">登录</a>
+                <a class="btn-register" href="首页.html">返回首页</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="register-page">
+            <div class="register-box">
+                <h2>用户注册</h2>
+                <p class="text-note">填写以下信息即可创建新账号</p>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="reg-username">用户名</label>
+                        <input type="text" id="reg-username" placeholder="请设置用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">邮箱</label>
+                        <input type="email" id="reg-email" placeholder="请输入邮箱地址" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">手机号</label>
+                        <input type="tel" id="reg-phone" placeholder="请输入11位手机号" pattern="[0-9]{11}" maxlength="11" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">密码</label>
+                        <input type="password" id="reg-password" placeholder="请设置密码(至少8位)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-confirm">确认密码</label>
+                        <input type="password" id="reg-confirm" placeholder="请再次输入密码" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" required> 我已阅读并同意<a href="服务条款.html">服务条款</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-submit">注册</button>
+                </form>
+                <p class="login-footer">已有账号? <a href="登录.html">立即登录</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+</body>
+</html>

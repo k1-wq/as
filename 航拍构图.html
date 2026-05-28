@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航拍构图指南 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .composition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .composition-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .composition-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .technique-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .technique-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .technique-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .tips-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航�?-->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="showLoginModal()">登录</button>
+                <button class="btn-register" onclick="showRegisterModal()">注册</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜�?-->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="客服.html">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="guide-container">
+            <div class="guide-header">
+                <h1>航拍构图指南</h1>
+                <p>专业摄影师分享的航拍技巧和构图方法</p>
+            </div>
+
+            <div class="composition-grid">
+                <div class="composition-card">
+                    <div class="card-image">三分法则示例</div>
+                    <div class="card-content">
+                        <h3>三分法则</h3>
+                        <p>将画面分为九宫格，重要元素放在交叉点</p>
+                        <ul class="technique-list">
+                            <li>水平线放置在上或下三分之一</li>
+                            <li>主体放置在四个交叉点之一</li>
+                            <li>创造视觉平衡和兴趣</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="composition-card">
+                    <div class="card-image">对称构图示例</div>
+                    <div class="card-content">
+                        <h3>对称构图</h3>
+                        <p>利用自然或人造的对称元素创造美感</p>
+                        <ul class="technique-list">
+                            <li>寻找水面倒影</li>
+                            <li>建筑对称结构</li>
+                            <li>道路延伸对称</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="composition-card">
+                    <div class="card-image">引导线示例</div>
+                    <div class="card-content">
+                        <h3>引导线构图</h3>
+                        <p>使用线条引导观众视线到主体</p>
+                        <ul class="technique-list">
+                            <li>道路、河流作为引导线</li>
+                            <li>桥梁、栏杆的线条</li>
+                            <li>山脉轮廓</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="composition-card">
+                    <div class="card-image">框架构图示例</div>
+                    <div class="card-content">
+                        <h3>框架构图</h3>
+                        <p>利用前景元素形成天然画框</p>
+                        <ul class="technique-list">
+                            <li>树枝形成的自然框</li>
+                            <li>门窗的人造框</li>
+                            <li>拱门和隧道</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="composition-card">
+                    <div class="card-image">俯拍角度示例</div>
+                    <div class="card-content">
+                        <h3>俯拍视角</h3>
+                        <p>从正上方拍摄，展现几何图案</p>
+                        <ul class="technique-list">
+                            <li>农田纹理图案</li>
+                            <li>城市布局规划</li>
+                            <li>自然景观纹理</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="composition-card">
+                    <div class="card-image">黄金时刻示例</div>
+                    <div class="card-content">
+                        <h3>光线运用</h3>
+                        <p>把握最佳拍摄时间和光线条件</p>
+                        <ul class="technique-list">
+                            <li>日出日落黄金时刻</li>
+                            <li>侧光突出纹理</li>
+                            <li>逆光剪影效果</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h2>航拍实用技巧</h2>
+                <div class="tips-grid">
+                    <div class="tip-item">
+                        <h4>📱 设备设置</h4>
+                        <p>调整相机参数以获得最佳画质</p>
+                    </div>
+                    <div class="tip-item">
+                        <h4>🌤️ 天气选择</h4>
+                        <p>选择合适的天气条件进行拍摄</p>
+                    </div>
+                    <div class="tip-item">
+                        <h4>🎯 主题策划</h4>
+                        <p>提前规划拍摄主题和路线</p>
+                    </div>
+                    <div class="tip-item">
+                        <h4>⚙️ 后期处理</h4>
+                        <p>基本的色彩校正和裁剪技巧</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>DroneControl - 专业的无人机控制与管理平台</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="客服.html">帮助中心</a></li>
+                        <li><a href="技术支.html">技术支.html">技术支</a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                        <li><a href="服务条款.html">服务条款</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>📧 support@dronecontrol.com</p>
+                    <p>📞 400-888-9999</p>
+                    <p><a href="客服.html" style="color: #667eea; text-decoration: none;">💬 在线客服</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+    </body>
+</html>
+

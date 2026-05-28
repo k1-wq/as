@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .avatar:hover::after {
+            content: '更换头像';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 0.9rem;
+            padding: 5px;
+        }
+        
+        .profile-info h2 {
+            margin: 0 0 10px 0;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 30px;
+        }
+        
+        .tab-btn {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: #667eea;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .settings-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .save-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            margin-left: 10px;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .info-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航�?-->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="showLoginModal()">登录</button>
+                <button class="btn-register" onclick="showRegisterModal()">注册</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜�?-->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="客服.html">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="avatar" id="avatarDisplay" onclick="changeAvatar()">👤</div>
+                <div class="profile-info">
+                    <h2 id="displayName">张三</h2>
+                    <p>高级飞行员 | 注册时间: 2025-03-15</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">156</div>
+                            <div>飞行次数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">87h</div>
+                            <div>飞行时长</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">234km</div>
+                            <div>飞行距离</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-tabs">
+                <button class="tab-btn active" onclick="showTab('basic')">基本信息</button>
+                <button class="tab-btn" onclick="showTab('security')">安全设置</button>
+                <button class="tab-btn" onclick="showTab('preferences')">偏好设置</button>
+                <button class="tab-btn" onclick="showTab('achievements')">成就徽章</button>
+            </div>
+
+            <div id="basic" class="tab-content active">
+                <div class="settings-form">
+                    <h3>基本信息</h3>
+                    
+                    <div id="successMessage" class="success-message">
+                       ?信息保存成功?
+                    </div>
+                    
+                    <div id="errorMessage" class="error-message">
+                       ?保存失败，请检查输入信息?
+                    </div>
+                    
+                    <form id="profileForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="realName">真实姓名 <span class="required">*</span></label>
+                                <input type="text" id="realName" placeholder="请输入您的真实姓名"  required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">性别 <span class="required">*</span></label>
+                                <select id="gender" required>
+                                    <option value="">请选择性别</option>
+                                    <option value="male">男</option>
+                                    <option value="female">女</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">手机号码 <span class="required">*</span></label>
+                                <input type="tel" id="phone" placeholder="请输入11位手机号码" pattern="[0-9]{11}" maxlength="11" required>
+                                <p class="info-text">用于接收重要通知和验证信息</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">邮箱地址 <span class="required">*</span></label>
+                                <input type="email" id="email" placeholder="请输入邮箱地址" required>
+                                <p class="info-text">用于接收系统通知和找回密码</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">详细地址</label>
+                            <input type="text" id="address" placeholder="请输入您的详细地址">
+                            <p class="info-text">用于设备邮寄和服务联系（选填）</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">城市</label>
+                                <input type="text" id="city" placeholder="请输入城市">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="province">省份</label>
+                                <input type="text" id="province" placeholder="请输入省份">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthday">出生日期</label>
+                            <input type="date" id="birthday">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">个人简介</label>
+                            <textarea id="bio" rows="4" placeholder="介绍一下自己吧..."></textarea>
+                            <p class="info-text">简短介绍您的飞行经验和兴趣（选填）</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" id="username" readonly style="background: #f8f9fa;">
+                            <p class="info-text">用户名不可修改</p>
+                        </div>
+                        
+                        <button type="submit" class="save-btn">保存修改</button>
+                        <button type="button" class="cancel-btn" onclick="resetForm()">重置</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="security" class="tab-content">
+                <div class="settings-form">
+                    <h3>安全设置</h3>
+                    <div class="form-group">
+                        <label for="currentPassword">当前密码</label>
+                        <input type="password" id="currentPassword" placeholder="请输入当前密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">新密码</label>
+                        <input type="password" id="newPassword" placeholder="请输入新密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">确认新密码</label>
+                        <input type="password" id="confirmPassword" placeholder="请再次输入新密码">
+                    </div>
+                    <button class="save-btn">修改密码</button>
+                </div>
+            </div>
+
+            <div id="preferences" class="tab-content">
+                <div class="settings-form">
+                    <h3>偏好设置</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="emailNotification" checked> 
+                            接收邮件通知
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="smsNotification" checked> 
+                            接收短信通知
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="pushNotification" checked> 
+                            接收推送通知
+                        </label>
+                    </div>
+                    <button class="save-btn">保存偏好</button>
+                </div>
+            </div>
+
+            <div id="achievements" class="tab-content">
+                <div class="settings-form">
+                    <h3>成就徽章</h3>
+                    <p>您的飞行成就将在这里展示</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>DroneControl - 专业的无人机控制与管理平台</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="客服.html">帮助中心</a></li>
+                        <li><a href="技术支.html">技术支?/a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                        <li><a href="服务条款.html">服务条款</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>📧 support@dronecontrol.com</p>
+                    <p>📞 400-888-9999</p>
+                    <p><a href="客服.html" style="color: #667eea; text-decoration: none;">💬 在线客服</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+    
+    <script src="js/个人用户中心script.js"></script>
+        
+    </script>
+    </body>
+</html>
+

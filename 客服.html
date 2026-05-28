@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服中心 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .customer-service-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .service-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .service-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .service-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* 联系方式卡片 */
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .contact-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .contact-card h3 {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .contact-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .btn-contact {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 服务时间区域 */
+        .service-time-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px;
+            margin-bottom: 50px;
+        }
+
+        .service-time-section h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .time-card {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .time-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .time-card p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* 常见问题区域 */
+        .faq-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px;
+            margin-bottom: 50px;
+        }
+
+        .faq-section h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+        }
+
+        .faq-question {
+            font-size: 1.15rem;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: #667eea;
+        }
+
+        .faq-answer {
+            margin-top: 15px;
+            color: #666;
+            line-height: 1.8;
+            display: none;
+            padding-left: 20px;
+        }
+
+        .faq-toggle {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            color: #667eea;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 反馈表单区域 */
+        .feedback-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px;
+        }
+
+        .feedback-section h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .feedback-form {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .service-header h1 {
+                font-size: 2rem;
+            }
+
+            .contact-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .time-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航�?-->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="window.location.href='首页.html'">返回首页</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜�?-->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="客服.html">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="customer-service-container">
+            <div class="service-header">
+                <h1>
+                    <span>💬</span>
+                    客服中心
+                </h1>
+                <p>我们随时为您提供专业的技术支持和服务</p>
+            </div>
+
+            <!-- 联系方式卡片 -->
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <span class="contact-icon">👨‍💻</span>
+                    <h3>人工客服</h3>
+                    <p>专业客服团队，为您解决各类问题</p>
+                    <div class="contact-info">
+                        <div class="contact-info-item">
+                            <span>📧</span>
+                            <span>support@dronecontrol.com</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <span>💬</span>
+                            <span>在线客服系统</span>
+                        </div>
+                    </div>
+                    <button class="btn-contact" onclick="openLiveChat()">联系人工客服</button>
+                </div>
+                
+                <div class="contact-card">
+                    <span class="contact-icon">📞</span>
+                    <h3>电话支持</h3>
+                    <p>紧急问题可直接拨打客服热线</p>
+                    <div class="contact-info">
+                        <div class="contact-info-item">
+                            <span>☎️</span>
+                            <span>400-888-9999</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <span>🕐</span>
+                            <span>9:00 - 21:00</span>
+                        </div>
+                    </div>
+                    <button class="btn-contact btn-secondary" onclick="callSupport()">拨打电话</button>
+                </div>
+                
+                <div class="contact-card">
+                    <span class="contact-icon">📱</span>
+                    <h3>微信客服</h3>
+                    <p>扫码关注官方微信，随时随地咨询</p>
+                    <div class="contact-info">
+                        <div class="contact-info-item">
+                            <span>💚</span>
+                            <span>DroneControl官方</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <span>✅</span>
+                            <span>已认证公众号</span>
+                        </div>
+                    </div>
+                    <button class="btn-contact btn-secondary" onclick="showWechatQR()">查看二维码</button>
+                </div>
+            </div>
+
+            <!-- 服务时间 -->
+            <div class="service-time-section">
+                <h2>
+                    <span>🕐</span>
+                    服务时间
+                </h2>
+                <div class="time-grid">
+                    <div class="time-card">
+                        <h4>人工客服</h4>
+                        <p>周一至周�?br>9:00 - 21:00</p>
+                    </div>
+                    <div class="time-card">
+                        <h4>电话支持</h4>
+                        <p>周一至周�?br>9:00 - 21:00</p>
+                    </div>
+                    <div class="time-card">
+                        <h4>邮件回复</h4>
+                        <p>工作�?br>24小时内回复</p>
+                    </div>
+                    <div class="time-card">
+                        <h4>紧急支持</h4>
+                        <p>7×24小时<br>在线响应</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="faq-section">
+                <h2>
+                    <span>❓</span>
+                    常见问题
+                </h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>如何连接无人机？</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>请确保无人机电量充足，打开无人机电源，在APP中点?连接无人?按钮，选择您的设备型号进行配对连接。如果连接失败，请尝试重启设备和APP?/p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>飞行前需要做哪些准备</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>飞行前请检查：1. 无人机电量是否充足；2. GPS信号是否正常?. 周围环境是否安全?. 是否在禁飞区外；5. 遥控器电量是否足够；6. 螺旋桨是否安装牢固?/p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>如何解决信号弱的问题</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>信号弱时请尝试：1. 移动到开阔地带；2. 避免高大建筑物遮挡；3. 检查天线方向；4. 重启无人机和遥控器；5. 更新固件到最新版本；6. 检查周围是否有强电磁干扰?/p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>数据不同步怎么办？</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>数据不同步时请：1. 检查网络连接；2. 退出账号重新登录；3. 清除缓存后重试；4. 确保APP为最新版本；5. 检查服务器状态；6. 联系客服协助处理    ?/p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>无人机保养注意事项有哪些</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>保养建议?. 定期清洁机身和镜头；2. 检查螺旋桨是否有损伤；3. 电池存放于干燥环境；4. 避免在高温或潮湿环境使用?. 定期检查固件更新；6. 长时间不用时保持50%电量存储?/p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>禁飞区域有哪些规定？</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>禁飞区域包括?. 机场及周?公里范围?. 军事管理区；3. 政府机关?. 监狱?. 人员密集场所上空?. 其他明确标识的禁飞区。飞行前请务必查询当地法规?/p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 反馈表单 -->
+            <div class="feedback-section">
+                <h2>
+                    <span>✉️</span>
+                    意见反馈
+                </h2>
+                <form class="feedback-form" onsubmit="handleFeedback(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feedback-name">姓名 *</label>
+                            <input type="text" id="feedback-name" placeholder="请输入您的姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="feedback-email">邮箱 *</label>
+                            <input type="email" id="feedback-email" placeholder="请输入您的邮箱" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedback-type">问题类型 *</label>
+                        <select id="feedback-type" required>
+                            <option value="">请选择问题类型</option>
+                            <option value="technical">技术问题</option>
+                            <option value="account">账号问题</option>
+                            <option value="payment">支付问题</option>
+                            <option value="suggestion">功能建议</option>
+                            <option value="complaint">投诉建议</option>
+                            <option value="other">其他问题</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedback-subject">主题 *</label>
+                        <input type="text" id="feedback-subject" placeholder="请简要描述问题主题" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedback-message">详细描述 *</label>
+                        <textarea id="feedback-message" placeholder="请详细描述您遇到的问题或建议..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">提交反馈</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>DroneControl - 专业的无人机控制与管理平台</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="客服.html">帮助中心</a></li>
+                        <li><a href="技术支.html">技术支?/a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                        <li><a href="服务条款.html">服务条款</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>📧 support@dronecontrol.com</p>
+                    <p>📞 400-888-9999</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="客服.js"></script>
+    
+   
+    </body>
+</html>
+

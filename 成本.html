@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无人机结构设计与成本控制 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .cost-page {
+            padding: 40px 0;
+        }
+        .cost-header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .cost-header h1 {
+            font-size: 2.6rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .cost-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        .cost-section {
+            margin-top: 30px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+        .cost-section h2 {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 18px;
+            border-left: 5px solid #667eea;
+            padding-left: 16px;
+        }
+        .cost-section h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 20px 0 10px;
+        }
+        .cost-section p,
+        .cost-section li {
+            color: #444;
+            line-height: 1.8;
+        }
+        .cost-section ul,
+        .cost-section ol {
+            margin: 12px 0 18px 1.4rem;
+        }
+        .cost-section ul li,
+        .cost-section ol li {
+            margin-bottom: 10px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 14px;
+        }
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .cost-table th,
+        .cost-table td {
+            border: 1px solid #dde3f0;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        .cost-table th {
+            background: #f0f4ff;
+            color: #2f4d91;
+        }
+        .code-block {
+            background: #f4f6ff;
+            border: 1px solid #d7dcea;
+            border-radius: 14px;
+            padding: 18px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.95rem;
+            color: #1f2937;
+        }
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header" role="banner">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <a class="btn-login" href="登录.html">登录</a>
+                <a class="btn-register" href="注册.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav" role="navigation">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="首页.html"><span class="nav-icon">🏠</span><span class="nav-text">首页</span></a></li>
+                <li class="nav-item"><a href="连接.html"><span class="nav-icon">🔗</span><span class="nav-text">设备连接</span></a></li>
+                <li class="nav-item"><a href="地图.html"><span class="nav-icon">🗺️</span><span class="nav-text">地图视图</span></a></li>
+                <li class="nav-item"><a href="控制台.html"><span class="nav-icon">🎮</span><span class="nav-text">控制台</span></a></li>
+                <li class="nav-item"><a href="任务管理.html"><span class="nav-icon">📋</span><span class="nav-text">任务管理</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content cost-page">
+        <div class="container">
+            <div class="cost-header">
+                <h1>无人机结构设计与成本控制</h1>
+                <p>本页面展示无人机结构设计与成本控制问题的深度分析，涵盖材料选型、制造工艺、结构优化、供应链与生命周期成本管理。</p>
+            </div>
+
+            <section class="cost-section">
+                <h2>一、结构设计核心挑战</h2>
+                <h3>1. 轻量化与强度刚度矛盾</h3>
+                <p>无人机结构设计必须在轻量化与强度、刚度之间做出平衡。碳纤维复合材料虽然具有最佳强度重量比，但成本远高于铝合金；而钛合金与工程塑料则分别在性能与成本上具有不同的权衡。</p>
+                <div class="table-wrapper">
+                    <table class="cost-table">
+                        <thead>
+                            <tr>
+                                <th>材料类型</th>
+                                <th>密度 (g/cm³)</th>
+                                <th>强度 (MPa)</th>
+                                <th>刚度 (GPa)</th>
+                                <th>成本指数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>铝合金6061-T6</td><td>2.70</td><td>276</td><td>68.9</td><td>1.0（基准）</td></tr>
+                            <tr><td>碳纤维复合材料</td><td>1.55-1.60</td><td>600-1500</td><td>70-150</td><td>3.0-5.0</td></tr>
+                            <tr><td>玻璃纤维增强</td><td>1.80-2.10</td><td>300-600</td><td>20-40</td><td>1.5-2.0</td></tr>
+                            <tr><td>钛合金TC4</td><td>4.43</td><td>895</td><td>110</td><td>8.0-12.0</td></tr>
+                            <tr><td>镁合金AZ31</td><td>1.78</td><td>200</td><td>45</td><td>1.8-2.5</td></tr>
+                            <tr><td>工程塑料(PEEK)</td><td>1.30-1.45</td><td>90-100</td><td>3.0-4.0</td><td>5.0-8.0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul>
+                    <li>强度/重量比 vs 成本：碳纤维最优，但成本是铝合金的 3-5 倍。</li>
+                    <li>刚度/重量比 vs 工艺复杂度：蜂窝夹层结构刚度高，但制造复杂且装配难度增大。</li>
+                    <li>疲劳寿命 vs 初始成本：高疲劳寿命材料会使初始成本提高 30-50%。</li>
+                    <li>环境适应性 vs 材料成本：耐腐蚀、耐高温材料成本通常提升 2-3 倍。</li>
+                </ul>
+
+                <h3>2. 多物理场耦合设计挑战</h3>
+                <p>结构设计必须考虑气动、热、电子与振动等多物理场耦合作用，系统级协同分析是降低风险、提升可靠性的关键。</p>
+                <div class="code-block">
+<pre><code>class MultiPhysicsDesignConstraints:
+    def __init__(self, drone_type):
+        self.drone_type = drone_type
+        self.coupling_effects = self.analyze_coupling_effects()
+
+    def analyze_coupling_effects(self):
+        coupling_matrix = {
+            'aerodynamic_structural': {
+                'phenomenon': '气动弹性效应',
+                'issues': [
+                    '颤振：特定速度下结构自激振动',
+                    '发散：气动力导致结构失稳',
+                    '控制反效：操纵面效率降低甚至反向'
+                ],
+                'impact': '可能造成灾难性失效',
+                'mitigation_cost': '增加设计验证成本20-30%'
+            },
+            'thermal_structural': {
+                'phenomenon': '热应力与变形',
+                'issues': [
+                    '电机发热导致臂架变形',
+                    '电子设备散热引起局部热应力',
+                    '环境温度变化导致材料性能变化'
+                ],
+                'impact': '精度下降，寿命缩短',
+                'mitigation_cost': '增加热管理成本15-25%'
+            },
+            'electromagnetic_structural': {
+                'phenomenon': '电磁兼容与结构影响',
+                'issues': [
+                    '金属结构对天线性能影响',
+                    '复合材料对电磁波穿透性',
+                    '结构谐振对电子设备干扰'
+                ],
+                'impact': '通信质量下降，可靠性降低',
+                'mitigation_cost': '增加EMC设计成本10-20%'
+            },
+            'vibration_acoustic': {
+                'phenomenon': '振动噪声耦合',
+                'issues': [
+                    '电机振动传递到载荷',
+                    '结构共振放大噪声',
+                    '气动噪声与结构振动相互作用'
+                ],
+                'impact': '成像质量下降，舒适性差',
+                'mitigation_cost': '增加减振降噪成本10-15%'
+            }
+        }
+        return coupling_matrix
+
+    def design_compromises(self):
+        compromises = {
+            'aerodynamic_vs_structural': {
+                'ideal_aero': '流线型，光滑曲面',
+                'ideal_struct': '简单几何，易制造',
+                'compromise': '分段近似曲面，增加连接件',
+                'performance_loss': '气动效率降低5-10%',
+                'cost_impact': '制造成本增加15-20%'
+            },
+            'lightweight_vs_durable': {
+                'lightweight_goal': '最小化材料用量',
+                'durability_need': '足够的损伤容限',
+                'compromise': '局部加强，全局优化',
+                'weight_penalty': '增加结构重量10-15%',
+                'cost_impact': '设计优化成本增加'
+            },
+            'modular_vs_integrated': {
+                'modular_benefit': '易维修，低成本更换',
+                'integrated_benefit': '高性能，轻量化',
+                'compromise': '关键模块化，非关键集成',
+                'performance_tradeoff': '重量增加5-8%',
+                'cost_benefit': '维修成本降低30-40%'
+            }
+        }
+        return compromises</code></pre>
+                </div>
+            </section>
+
+            <section class="cost-section">
+                <h2>二、材料选择与成本优化策略</h2>
+                <h3>1. 分级材料应用策略</h3>
+                <p>针对不同载荷与功能部位采用分区材料策略，可在满足强度要求的同时控制整体成本。</p>
+                <div class="code-block">
+<pre><code>class MaterialSelectionStrategy:
+    def __init__(self, budget_constraint, performance_requirements):
+        self.budget = budget_constraint
+        self.requirements = performance_requirements
+        self.material_zoning = self.create_material_zones()
+
+    def create_material_zones(self):
+        zones = {
+            'high_stress_critical': {
+                'location': ['电机安装座', '起落架连接点', '主承力梁'],
+                'requirements': ['高强度', '高刚度', '高疲劳寿命'],
+                'material_options': [
+                    {'name': '碳纤维复合材料', 'cost_factor': 4.0, 'weight_saving': 40},
+                    {'name': '钛合金', 'cost_factor': 10.0, 'weight_saving': 20},
+                    {'name': '高强度铝合金', 'cost_factor': 1.5, 'weight_saving': 10}
+                ]
+            },
+            'medium_stress_important': {
+                'location': ['机臂', '载荷舱结构', '控制面'],
+                'requirements': ['中等强度', '适度刚度', '良好疲劳性'],
+                'material_options': [
+                    {'name': '普通铝合金', 'cost_factor': 1.0, 'weight_saving': 0},
+                    {'name': '玻璃纤维复合材料', 'cost_factor': 2.0, 'weight_saving': 25},
+                    {'name': '镁合金', 'cost_factor': 2.5, 'weight_saving': 35}
+                ]
+            },
+            'low_stress_noncritical': {
+                'location': ['整流罩', '装饰件', '内部支架'],
+                'requirements': ['基本强度', '低重量', '低成本'],
+                'material_options': [
+                    {'name': '工程塑料', 'cost_factor': 1.2, 'weight_saving': 50},
+                    {'name': '轻质木材', 'cost_factor': 0.3, 'weight_saving': 60},
+                    {'name': '发泡材料', 'cost_factor': 0.5, 'weight_saving': 70}
+                ]
+            },
+            'special_requirements': {
+                'location': ['天线罩', '热管理部件', '透明舱盖'],
+                'requirements': ['电磁透明', '耐高温', '光学透明'],
+                'material_options': [
+                    {'name': '透波复合材料', 'cost_factor': 3.0, 'specialty': 'EM透明'},
+                    {'name': '陶瓷基复合材料', 'cost_factor': 15.0, 'specialty': '耐高温'},
+                    {'name': '聚碳酸酯', 'cost_factor': 1.8, 'specialty': '光学透明'}
+                ]
+            }
+        }
+        return zones
+</code></pre>
+                </div>
+                <p>该策略强调关键部位高性能材料、中等部位平衡成本与性能、非关键部位使用经济材料。</p>
+
+                <h3>2. 先进制造工艺成本分析</h3>
+                <div class="table-wrapper">
+                    <table class="cost-table">
+                        <thead>
+                            <tr>
+                                <th>工艺类型</th>
+                                <th>单件成本</th>
+                                <th>模具成本</th>
+                                <th>最小批量</th>
+                                <th>设计自由度</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>CNC加工</td><td>中高</td><td>无</td><td>1</td><td>高</td></tr>
+                            <tr><td>注塑成型</td><td>极低</td><td>极高</td><td>1000+</td><td>中</td></tr>
+                            <tr><td>3D打印(塑料)</td><td>中</td><td>无</td><td>1</td><td>极高</td></tr>
+                            <tr><td>3D打印(金属)</td><td>极高</td><td>无</td><td>1</td><td>极高</td></tr>
+                            <tr><td>复合材料铺层</td><td>高</td><td>中</td><td>10-100</td><td>中高</td></tr>
+                            <tr><td>钣金加工</td><td>低</td><td>低</td><td>10-100</td><td>低</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>推荐按阶段选用混合制造策略，以便在研发、试生产与量产之间合理分配成本与性能。</p>
+                <ul>
+                    <li>原型阶段：3D打印 + CNC 快速迭代，容忍高成本。</li>
+                    <li>小批量阶段：复合材料 + 钣金平衡性能与成本。</li>
+                    <li>大批量阶段：注塑 + 冲压最大化成本效益。</li>
+                </ul>
+            </section>
+
+            <section class="cost-section">
+                <h2>三、结构优化与成本控制技术</h2>
+                <h3>1. 拓扑优化与轻量化设计</h3>
+                <p>拓扑优化是通过有限元模型寻找材料最优分布的重要手段，能够显著减少材料使用并保持结构承载能力。</p>
+                <div class="code-block">
+<pre><code>class TopologyOptimizationSystem:
+    def __init__(self, design_space, constraints):
+        self.design_space = design_space
+        self.constraints = constraints
+        self.optimization_methods = self.define_methods()
+
+    def define_methods(self):
+        methods = {
+            'topology_optimization': {
+                'approach': '基于有限元的材料分布优化',
+                'algorithms': ['SIMP法', '水平集法', '进化结构优化'],
+                'applications': '概念设计阶段，寻找最佳材料分布',
+                'cost_impact': '减少材料用量20-40%，增加设计成本'
+            },
+            'size_optimization': {
+                'approach': '优化截面尺寸和厚度',
+                'algorithms': ['梯度法', '遗传算法', '响应面法'],
+                'applications': '详细设计阶段，精确尺寸确定',
+                'cost_impact': '精确用料，减少浪费10-20%'
+            },
+            'shape_optimization': {
+                'approach': '优化几何形状和轮廓',
+                'algorithms': ['参数化形状优化', '自由形状优化'],
+                'applications': '气动和结构综合优化',
+                'cost_impact': '改善性能，可能增加制造复杂度'
+            },
+            'topometry_optimization': {
+                'approach': '优化加强筋布局和密度',
+                'algorithms': ['基于灵敏度的优化'],
+                'applications': '板壳结构加强设计',
+                'cost_impact': '在关键区域增加材料，非关键区域减薄'
+            }
+        }
+        return methods
+</code></pre>
+                </div>
+                <p>通过概念优化、详细优化与制造性优化三阶段闭环，可实现最佳结构与可制造性之间的平衡。</p>
+
+                <h3>2. 模块化与标准化设计</h3>
+                <div class="code-block">
+<pre><code>class ModularDesignFramework:
+    def __init__(self, product_family):
+        self.product_family = product_family
+        self.module_architecture = self.define_module_architecture()
+        self.standardization_levels = self.define_standardization()
+
+    def define_module_architecture(self):
+        modules = {
+            'power_module': {
+                'functions': ['能源存储', '电源管理', '配电'],
+                'interfaces': ['电气接口', '机械安装', '热管理'],
+                'variants': ['小容量', '中容量', '大容量'],
+                'standardization': '高，80%部件通用'
+            },
+            'propulsion_module': {
+                'functions': ['动力产生', '推力控制', '冷却'],
+                'interfaces': ['机械安装', '电气控制', '信号连接'],
+                'variants': ['不同功率级别', '不同电机类型'],
+                'standardization': '中，60%部件通用'
+            },
+            'avionics_module': {
+                'functions': ['飞行控制', '导航', '通信'],
+                'interfaces': ['数据总线', '电源', '机械固定'],
+                'variants': ['基本型', '增强型', '专业型'],
+                'standardization': '高，70%部件通用'
+            },
+            'structural_module': {
+                'functions': ['主体结构', '载荷支撑', '保护'],
+                'interfaces': ['模块连接', '外部安装'],
+                'variants': ['不同尺寸', '不同材料'],
+                'standardization': '低，40%部件通用'
+            },
+            'payload_module': {
+                'functions': ['任务设备承载', '数据采集', '特定功能'],
+                'interfaces': ['机械安装', '数据接口', '电源'],
+                'variants': ['相机', '传感器', '运输箱'],
+                'standardization': '低，20%部件通用'
+            }
+        }
+        return modules
+</code></pre>
+                </div>
+                <p>模块化设计有助于降低开发成本、简化供应链与提高维修效率，标准化进一步放大规模效益。</p>
+            </section>
+
+            <section class="cost-section">
+                <h2>四、制造工艺成本优化</h2>
+                <h3>1. 工艺选择与成本建模</h3>
+                <div class="code-block">
+<pre><code>class ManufacturingProcessOptimizer:
+    def __init__(self, annual_volume, part_complexity):
+        self.annual_volume = annual_volume
+        self.part_complexity = part_complexity
+        self.process_options = self.define_process_options()
+
+    def define_process_options(self):
+        options = {
+            'cnc_machining': {
+                'fixed_costs': {'programming': 5000, 'fixture_design': 3000, 'setup': 2000},
+                'variable_costs': {'material_per_part': 50, 'machining_time': 120, 'hourly_rate': 80, 'tooling_per_part': 10},
+                'economical_volume': '1-100件'
+            },
+            'injection_molding': {
+                'fixed_costs': {'mold_design': 15000, 'mold_fabrication': 30000, 'setup': 5000},
+                'variable_costs': {'material_per_part': 5, 'cycle_time': 0.5, 'machine_hourly': 100, 'secondary_operations': 2},
+                'economical_volume': '1000+件'
+            },
+            '3d_printing': {
+                'fixed_costs': {'file_preparation': 1000, 'machine_setup': 500},
+                'variable_costs': {'material_per_part': 30, 'print_time': 300, 'machine_hourly': 40, 'post_processing': 20},
+                'economical_volume': '1-50件'
+            },
+            'composite_layup': {
+                'fixed_costs': {'mold_fabrication': 10000, 'tooling': 5000},
+                'variable_costs': {'material_per_part': 80, 'labor_time': 180, 'labor_rate': 60, 'curing_energy': 15},
+                'economical_volume': '10-500件'
+            }
+        }
+        return options
+</code></pre>
+                </div>
+                <p>推荐将制造工艺与产量、零件复杂性分层决策，获得最经济的工艺组合。</p>
+                <h3>2. 装配成本优化</h3>
+                <p>面向装配的设计（DFA）集中于减少零件数、降低装配步骤、标准化紧固件和模块化预装配。</p>
+                <ul>
+                    <li>减少零件数量：目标将零件数从 50-100 件降至 20-40 件，可降低 40-60% 装配成本。</li>
+                    <li>简化装配操作：使用卡扣连接、自对齐结构，可减少 50-70% 装配时间。</li>
+                    <li>标准化紧固件：将紧固件种类从 5-10 种减少到 2-3 种，采购与装配成本降低 30-40%。</li>
+                    <li>模块化预装配：将子模块预先组装，可提高生产线平衡，效率提升 20-30%。</li>
+                </ul>
+            </section>
+
+            <section class="cost-section">
+                <h2>五、供应链与成本管理</h2>
+                <h3>1. 供应商管理与成本控制</h3>
+                <div class="code-block">
+<pre><code>class SupplyChainCostOptimizer:
+    def __init__(self, component_list, annual_requirements):
+        self.components = component_list
+        self.annual_demand = annual_requirements
+        self.supplier_base = self.identify_suppliers()
+
+    def identify_suppliers(self):
+        suppliers = {
+            'local_suppliers': {'advantages': ['快速响应', '低运输成本'], 'cost_premium': '10-20%', 'lead_time': '1-2周'},
+            'overseas_suppliers': {'advantages': ['低成本', '大规模产能'], 'cost_saving': '30-50%', 'lead_time': '8-12周'},
+            'dual_sourcing': {'strategy': '关键部件双源供应', 'cost_impact': '增加管理成本10-15%'},
+            'vertical_integration': {'strategy': '内部制造关键部件', 'break_even': '年产量>5000套时经济'}
+        }
+        return suppliers
+</code></pre>
+                </div>
+                <p>供应链决策应兼顾采购成本、物流成本、质量成本、库存成本和风险成本，避免单纯降价导致的隐性总成本上升。</p>
+
+                <h3>2. 价值工程与成本优化</h3>
+                <div class="code-block">
+<pre><code>class ValueEngineeringProcess:
+    def __init__(self, product_design, target_cost):
+        self.design = product_design
+        self.target_cost = target_cost
+        self.current_cost = self.analyze_current_cost()
+
+    def analyze_current_cost(self):
+        cost_breakdown = {
+            'materials': {'percentage': 40, 'details': {'composite_materials': 15, 'metals': 10}},
+            'manufacturing': {'percentage': 30, 'details': {'machining': 12, 'assembly': 10}},
+            'overhead': {'percentage': 20, 'details': {'tooling': 8, 'facility': 6}},
+            'profit_margin': {'percentage': 10, 'details': {'company_profit': 7, 'distribution': 3}}
+        }
+        return cost_breakdown
+</code></pre>
+                </div>
+                <p>价值工程通过功能成本分析和替代方案评估，发现材料替代、设计简化和流程优化的成本降低机会。</p>
+            </section>
+
+            <section class="cost-section">
+                <h2>六、全生命周期成本管理</h2>
+                <h3>1. 生命周期成本 (LCC) 分析</h3>
+                <div class="table-wrapper">
+                    <table class="cost-table">
+                        <thead>
+                            <tr>
+                                <th>生命周期阶段</th>
+                                <th>成本占比</th>
+                                <th>主要构成</th>
+                                <th>管理重点</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>研发设计</td><td>10-15%</td><td>人力、原型、测试</td><td>设计优化，减少后期变更</td></tr>
+                            <tr><td>生产制造</td><td>30-40%</td><td>材料、人工、设备</td><td>工艺优化，供应链管理</td></tr>
+                            <tr><td>运营使用</td><td>25-35%</td><td>能源、维护、保险</td><td>可靠性设计，易维护性</td></tr>
+                            <tr><td>维护维修</td><td>15-20%</td><td>备件、人工、设备</td><td>模块化设计，诊断能力</td></tr>
+                            <tr><td>退役处置</td><td>5-10%</td><td>回收、处理、环保</td><td>可回收设计，环保材料</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>2. 基于可靠性的维护成本优化</h3>
+                <div class="code-block">
+<pre><code>class ReliabilityCenteredMaintenance:
+    def __init__(self, component_reliability_data):
+        self.reliability_data = component_reliability_data
+        self.maintenance_strategies = self.define_strategies()
+
+    def define_strategies(self):
+        strategies = {
+            'predictive_maintenance': {'applicability': '有明确退化特征的部件', 'cost_benefit': '减少计划外停机'},
+            'preventive_maintenance': {'applicability': '已知寿命分布的部件', 'cost_benefit': '预防故障'},
+            'condition_based_maintenance': {'applicability': '可监测状态的部件', 'cost_benefit': '平衡可靠性与成本'},
+            'run_to_failure': {'applicability': '低价值、易更换部件', 'cost_benefit': '最小化维护成本'}
+        }
+        return strategies
+</code></pre>
+                </div>
+                <p>通过可靠性数据驱动的维护策略选择，可以实现备件优化、预测维护和总体维护成本下降。</p>
+            </section>
+
+            <section class="cost-section">
+                <h2>七、技术发展路线图</h2>
+                <h3>1. 短期重点（1-2 年）</h3>
+                <ul>
+                    <li>设计工具普及，拓扑优化软件成本降低 50%。</li>
+                    <li>云仿真平台降低硬件投资，参数化设计提高效率。</li>
+                    <li>材料成本优化，国产碳纤维成本降低 30%。</li>
+                    <li>回收材料应用比例提高，标准化材料规格减少浪费。</li>
+                </ul>
+                <h3>2. 中期发展（3-5 年）</h3>
+                <ul>
+                    <li>智能制造技术、机器人装配成本降低 40%。</li>
+                    <li>AI 工艺优化减少材料浪费，数字孪生减少物理原型。</li>
+                    <li>新型结构技术：4D 打印智能结构、超材料轻量化设计、仿生结构优化。</li>
+                </ul>
+                <h3>3. 长期愿景（5-10 年）</h3>
+                <ul>
+                    <li>革命性制造技术：分子级自组装制造、零浪费循环制造、分布式按需制造。</li>
+                    <li>智能成本管理：AI 实时成本优化、区块链供应链透明化、预测性成本控制。</li>
+                </ul>
+            </section>
+
+            <div class="comm-footer">
+                <a href="首页.html" class="back-link">← 返回首页</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,702 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>DroneControl - 智能无人机控制平台</title>
+    <style>
+        /* 全局样式与变量 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: #f5f7fc;
+            color: #1e293b;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* 顶部导航 */
+        .top-header {
+            background: white;
+            border-bottom: 1px solid #e9eef2;
+            padding: 12px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+        .top-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            font-size: 28px;
+        }
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f2b4b;
+            letter-spacing: -0.5px;
+        }
+        .user-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-login, .btn-register, .btn-logout {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .btn-login {
+            background: transparent;
+            color: #0f2b4b;
+            border-color: #cdd9e6;
+        }
+        .btn-login:hover {
+            background: #f0f4fe;
+            border-color: #0f2b4b;
+        }
+        .btn-register {
+            background: #0f2b4b;
+            color: white;
+            border-color: #0f2b4b;
+        }
+        .btn-register:hover {
+            background: #1d3b5e;
+        }
+        .btn-logout {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #e2e8f0;
+        }
+
+        /* 主导航 */
+        .main-nav {
+            background: white;
+            border-bottom: 1px solid #e9eef2;
+            padding: 6px 0;
+        }
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .nav-item.active a {
+            background: #eef4ff;
+            color: #0f2b4b;
+            font-weight: 600;
+        }
+        .nav-item a:hover {
+            background: #f1f5f9;
+            color: #0f2b4b;
+        }
+
+        /* 主内容区域布局 */
+        .main-content {
+            flex: 1;
+            padding: 28px 0 40px;
+        }
+        .home-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 280px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* 侧边栏通用面板 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+            border: 1px solid #edf2f9;
+        }
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f2b4b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+        .sidebar-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: #0f2b4b;
+            border-radius: 4px;
+        }
+
+        /* ----- 左侧推荐卡片调整（重点：缩小尺寸） ----- */
+        .recommend-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .recommend-card {
+            background: #f9fbfd;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: 1px solid #edf2f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .recommend-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(0,0,0,0.06);
+            border-color: #cdd9e6;
+        }
+        .card-image {
+            height: 90px; /* 降低图片高度，使卡片更紧凑 */
+            background: linear-gradient(135deg, #d9e6f2, #b8cee8);
+            background-size: cover;
+            background-position: center;
+        }
+        /* 为不同卡片添加示意背景 */
+        .recommend-card:nth-child(1) .card-image {
+            background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+        .recommend-card:nth-child(2) .card-image {
+            background-image: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
+        }
+        .recommend-card:nth-child(3) .card-image {
+            background-image: linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%);
+        }
+        .card-content {
+            padding: 10px 12px 12px; /* 内边距减小 */
+            position: relative;
+        }
+        .card-badge {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.65rem; /* 徽章字体缩小 */
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .card-badge.hot {
+            background: #f97316;
+        }
+        .card-badge.new {
+            background: #10b981;
+        }
+        .card-content h3 {
+            font-size: 0.9rem; /* 标题字号从默认调小 */
+            font-weight: 700;
+            color: #0f2b4b;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+        .card-content p {
+            font-size: 0.7rem; /* 描述文字明显缩小，观感更精致 */
+            color: #5e6f82;
+            line-height: 1.4;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 右侧边栏活动样式 */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .activity-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .activity-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: #f1f5f9;
+            flex-shrink: 0;
+        }
+        .activity-icon.success { background: #e0f2e9; color: #0f6e4a; }
+        .activity-icon.warning { background: #fff3e0; color: #b85e00; }
+        .activity-icon.info { background: #e8f0fe; color: #1e4a7a; }
+        .activity-info h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        .activity-info p {
+            font-size: 0.7rem;
+            color: #5f6b7a;
+            margin-bottom: 4px;
+        }
+        .activity-time {
+            font-size: 0.65rem;
+            color: #8b9aaf;
+        }
+        .insight-panel {
+            margin-top: 6px;
+        }
+        .insight-panel h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0f2b4b;
+            margin-bottom: 8px;
+        }
+        .insight-panel p {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .sidebar-link {
+            color: #0f2b4b;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.8rem;
+            background: #f0f4fe;
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .sidebar-link:hover {
+            background: #e0e8f5;
+        }
+
+        /* 中央内容 */
+        .home-center {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .welcome-banner {
+            background: linear-gradient(105deg, #0b1e33 0%, #1a3650 100%);
+            border-radius: 28px;
+            padding: 28px 30px;
+            color: white;
+            box-shadow: 0 12px 28px rgba(0,20,40,0.2);
+        }
+        .welcome-banner h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .welcome-banner p {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f2b4b;
+            margin-bottom: 20px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+        .feature-card {
+            background: white;
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f9;
+        }
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .feature-card p {
+            font-size: 0.8rem;
+            color: #475569;
+        }
+        .btn-secondary {
+            background: #edf2f9;
+            padding: 10px 22px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: #0f2b4b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .action-card {
+            background: white;
+            padding: 18px 12px;
+            border-radius: 18px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #edf2f9;
+            transition: 0.2s;
+        }
+        .action-card:hover {
+            background: #f8faff;
+            border-color: #b8cee8;
+        }
+        .action-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        .action-card h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .action-card p {
+            font-size: 0.7rem;
+            color: #5e6f82;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        .status-card {
+            background: white;
+            border-radius: 18px;
+            padding: 16px;
+            border-left: 5px solid #94a3b8;
+        }
+        .status-card.online { border-left-color: #10b981; }
+        .status-card.offline { border-left-color: #94a3b8; }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            margin-bottom: 10px;
+        }
+        .online .status-indicator { background: #10b981; }
+        .status-details {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+        .connection-status-card {
+            background: #f0f6ff;
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .footer {
+            background: white;
+            border-top: 1px solid #e9eef2;
+            padding: 32px 0 18px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .footer h4 {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f2b4b;
+        }
+        .footer ul {
+            list-style: none;
+        }
+        .footer li {
+            margin-bottom: 8px;
+        }
+        .footer a {
+            text-decoration: none;
+            color: #475569;
+        }
+        .footer-bottom {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.75rem;
+            border-top: 1px solid #edf2f9;
+            padding-top: 16px;
+        }
+        @media (max-width: 1100px) {
+            .home-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left, .sidebar-right {
+                order: 2;
+            }
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <a class="btn-login" href="登录.html">登录</a>
+                <a class="btn-register" href="注册.html">注册</a>
+                <a class="btn-logout" href="退出登录.html">退出登录</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜单 -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="首页.html"><span class="nav-icon">🏠</span><span class="nav-text">首页</span></a>
+                </li>
+                <li class="nav-item"><a href="连接.html"><span class="nav-icon">🔗</span><span class="nav-text">设备连接</span></a></li>
+                <li class="nav-item"><a href="地图.html"><span class="nav-icon">🗺️</span><span class="nav-text">地图视图</span></a></li>
+                <li class="nav-item"><a href="控制台.html"><span class="nav-icon">🎮</span><span class="nav-text">控制台</span></a></li>
+                <li class="nav-item"><a href="任务管理.html"><span class="nav-icon">📋</span><span class="nav-text">任务管理</span></a></li>
+                <li class="nav-item"><a href="数据分析.html"><span class="nav-icon">📊</span><span class="nav-text">数据分析</span></a></li>
+                <li class="nav-item"><a href="飞行记录.html"><span class="nav-icon">📝</span><span class="nav-text">飞行记录</span></a></li>
+                <li class="nav-item"><a href="通知.html"><span class="nav-icon">🔔</span><span class="nav-text">通知中心</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="container home-layout">
+            <aside class="sidebar sidebar-left">
+                <div class="panel recommend-panel">
+                    <h2 class="sidebar-title">为您推荐</h2>
+                    <div class="recommend-grid">
+                        <div class="recommend-card" onclick="window.location.href='新手飞行指南教程.html'">
+                            <div class="card-image"></div>
+                            <div class="card-content">
+                                <span class="card-badge hot">热门</span>
+                                <h3>新手飞行教程</h3>
+                                <p>从零开始学习无人机操控技巧</p>
+                            </div>
+                        </div>
+                        <div class="recommend-card" onclick="window.location.href='航拍构图.html'">
+                            <div class="card-image"></div>
+                            <div class="card-content">
+                                <span class="card-badge new">新品</span>
+                                <h3>航拍构图指南</h3>
+                                <p>专业摄影师分享航拍技巧</p>
+                            </div>
+                        </div>
+                        <div class="recommend-card" onclick="window.location.href='安全飞行规范.html'">
+                            <div class="card-image"></div>
+                            <div class="card-content">
+                                <h3>安全飞行规范</h3>
+                                <p>了解最新飞行安全规定</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="home-center">
+                <section class="welcome-banner">
+                    <div class="container" style="padding:0;">
+                        <h1>欢迎使用智能无人机控制平台</h1>
+                        <p>实时监控 · 智能控制 · 数据分析</p>
+                    </div>
+                </section>
+
+                <section class="drone-features">
+                    <div class="container" style="padding:0;">
+                        <h2 class="section-title">无人机特点专题</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card"><div class="feature-icon">⚡</div><h3>高性能动力</h3><p>稳定续航与高功率输出。</p></div>
+                            <div class="feature-card"><div class="feature-icon">🧠</div><h3>智能感知</h3><p>多传感器融合与自主避障。</p></div>
+                            <div class="feature-card"><div class="feature-icon">🔒</div><h3>安全可靠</h3><p>冗余设计与风险控制。</p></div>
+                            <div class="feature-card"><div class="feature-icon">🌐</div><h3>行业生态</h3><p>标准协同推动产业场景。</p></div>
+                        </div>
+                        <div class="feature-cta">
+                            <a href="痛点.html" class="btn-secondary">查看无人机系统痛点</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="connection-status-section" id="connectionStatusSection" style="display: none;">
+                    <div class="container" style="padding:0;">
+                        <div class="connection-status-card">
+                            <div class="status-icon">📡</div>
+                            <div class="status-info"><h3>已连接设备</h3><p id="connectedDeviceName">未连接</p></div>
+                            <div class="status-actions">
+                                <button class="btn-view-device" onclick="viewConnectedDevice()">查看设备</button>
+                                <button class="btn-disconnect-quick" onclick="disconnectFromHome()">断开</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="quick-actions">
+                    <div class="container" style="padding:0;">
+                        <h2 class="section-title">快速操作</h2>
+                        <div class="action-grid">
+                            <div class="action-card" onclick="window.location.href='连接.html'"><div class="action-icon">🔗</div><h3>连接设备</h3><p>快速连接无人机</p></div>
+                            <div class="action-card" onclick="window.location.href='控制台.html'"><div class="action-icon">🎮</div><h3>飞行控制</h3><p>实时控制监控</p></div>
+                            <div class="action-card" onclick="window.location.href='任务管理.html'"><div class="action-icon">📋</div><h3>任务管理</h3><p>创建管理任务</p></div>
+                            <div class="action-card" onclick="window.location.href='数据分析.html'"><div class="action-icon">📊</div><h3>数据分析</h3><p>查看飞行统计</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="device-status">
+                    <div class="container" style="padding:0;">
+                        <h2 class="section-title">无人机实时监控</h2>
+                        <div id="droneStatusDisplay" class="status-grid">
+                            <div class="status-card loading"><div class="status-indicator"></div><h3>加载中...</h3><p>正在获取无人机状态</p></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="sidebar sidebar-right">
+                <div class="panel activity-panel">
+                    <h2 class="sidebar-title">最近活动</h2>
+                    <div class="activity-list">
+                        <div class="activity-item"><div class="activity-icon success">✓</div><div class="activity-info"><h4>完成飞行任务 #2026052501</h4><p>飞行时长: 25分钟 | 距离: 3.2km</p><span class="activity-time">2小时前</span></div></div>
+                        <div class="activity-item"><div class="activity-icon warning">⚠</div><div class="activity-info"><h4>设备维护提醒</h4><p>建议对无人机进行例行检查</p><span class="activity-time">5小时前</span></div></div>
+                        <div class="activity-item"><div class="activity-icon info">ℹ</div><div class="activity-info"><h4>系统更新通知</h4><p>新版本 v2.5.0 已发布</p><span class="activity-time">昨天</span></div></div>
+                    </div>
+                </div>
+                <div class="panel insight-panel">
+                    <h3>专题联动</h3>
+                    <p>了解无人机系统核心痛点，提升平台决策效率。</p>
+                    <a href="痛点.html" class="sidebar-link">查看痛点分析</a>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section"><h4>关于我们</h4><p>DroneControl - 专业的无人机控制与管理平台</p></div>
+                <div class="footer-section"><h4>学习资源</h4><ul><li><a href="新手飞行指南教程.html">新手教程</a></li><li><a href="安全飞行规范.html">安全规范</a></li><li><a href="航拍构图.html">航拍技巧</a></li></ul></div>
+                <div class="footer-section"><h4>帮助支持</h4><ul><li><a href="客服.html">客服中心</a></li><li><a href="技术支持.html">技术支持</a></li><li><a href="个人用户中心.html">用户中心</a></li></ul></div>
+                <div class="footer-section"><h4>法律条款</h4><ul><li><a href="隐私政策.html">隐私政策</a></li><li><a href="服务条款.html">服务条款</a></li></ul></div>
+                <div class="footer-section"><h4>联系我们</h4><p>📧 support@dronecontrol.com</p><p>📞 400-888-9999</p></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 DroneControl. 保留所有权利.</p></div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+    <script>
+        function loadDroneStatus() {
+            const savedStatus = localStorage.getItem('droneStatus');
+            const displayDiv = document.getElementById('droneStatusDisplay');
+            if (savedStatus) {
+                try {
+                    const droneData = JSON.parse(savedStatus);
+                    const now = new Date().getTime();
+                    if (now - droneData.timestamp < 300000) {
+                        const statusText = droneData.isFlying ? '飞行中' : '待机';
+                        displayDiv.innerHTML = `
+                            <div class="status-card online" onclick="window.location.href='控制台.html'" style="cursor:pointer;">
+                                <div class="status-indicator"></div><h3>主无人机</h3><p>${statusText}</p>
+                                <div class="status-details"><span>高度: ${Math.floor(droneData.altitude)}m</span><span>速度: ${Math.floor(droneData.speed)}km/h</span></div>
+                                <div class="status-details"><span>电量: ${Math.floor(droneData.battery)}%</span><span>信号: 强</span></div>
+                            </div>
+                            <div class="status-card online" onclick="window.location.href='地图.html'" style="cursor:pointer;">
+                                <div class="status-indicator"></div><h3>查看地图</h3><p>实时监控</p>
+                                <div class="status-details"><span>经度: ${droneData.longitude.toFixed(4)}</span><span>纬度: ${droneData.latitude.toFixed(4)}</span></div>
+                            </div>`;
+                    } else { showOfflineStatus(); }
+                } catch(e) { showOfflineStatus(); }
+            } else { showOfflineStatus(); }
+        }
+        function showOfflineStatus() {
+            document.getElementById('droneStatusDisplay').innerHTML = `
+                <div class="status-card offline" onclick="window.location.href='控制台.html'" style="cursor:pointer;"><div class="status-indicator"></div><h3>无人机 A</h3><p>未连接</p><div class="status-details"><span>点击连接设备</span></div></div>
+                <div class="status-card online" onclick="window.location.href='地图.html'" style="cursor:pointer;"><div class="status-indicator"></div><h3>地图视图</h3><p>查看位置</p><div class="status-details"><span>点击进入</span></div></div>`;
+        }
+        window.addEventListener('load', function() {
+            loadDroneStatus();
+            setInterval(loadDroneStatus, 3000);
+        });
+        function quickAction(action) { alert('功能开发中...'); }
+    </script>
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        new CozeWebSDK.WebChatClient({
+          config: { bot_id: '7643809000467333139' },
+          componentProps: { title: 'AI智能助手', uploadable: true, width:400 },
+          auth: { type: 'token', token: 'pat_35hsW1KrgR7tmbzr9ok8omsFjqZ7MWA0NYGwA0kW5BVcMxYHNMKp2aXQCV4Hx5bw', onRefreshToken: function () { return 'pat_35hsW1KrgR7tmbzr9ok8omsFjqZ7MWA0NYGwA0kW5BVcMxYHNMKp2aXQCV4Hx5bw' } }
+        });
+      });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>已退出登录</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top left, #3d5cff 0%, #0b1747 45%, #05060e 100%);
+      color: #ffffff;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+    .glow {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(96, 170, 255, 0.35), transparent 55%);
+      filter: blur(32px);
+      top: 10%;
+      left: 10%;
+      animation: drift 10s ease-in-out infinite;
+    }
+    .glow:nth-child(2) {
+      top: auto;
+      left: auto;
+      bottom: 8%;
+      right: 12%;
+      background: radial-gradient(circle, rgba(255, 135, 180, 0.28), transparent 55%);
+      animation-duration: 12s;
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -18px); }
+    }
+    .logout-card {
+      position: relative;
+      width: min(520px, 100%);
+      padding: 42px 36px;
+      border-radius: 28px;
+      background: rgba(10, 18, 55, 0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.35);
+      backdrop-filter: blur(12px);
+      text-align: center;
+      animation: fadeInUp 0.9s ease-out forwards;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .logout-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 45%);
+      pointer-events: none;
+    }
+    .logout-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 96px;
+      height: 96px;
+      margin-bottom: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: inset 0 0 16px rgba(255,255,255,0.08);
+      animation: pulse 1.8s ease-in-out infinite;
+      font-size: 2.5rem;
+    }
+    .logout-title {
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      margin-bottom: 16px;
+      letter-spacing: 0.04em;
+    }
+    .logout-text {
+      color: rgba(255,255,255,0.78);
+      line-height: 1.85;
+      margin-bottom: 32px;
+      font-size: 1rem;
+    }
+    .logout-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      padding: 14px 30px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #5e8dff, #a064ff);
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 16px 36px rgba(94,141,255,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .logout-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 22px 44px rgba(94,141,255,0.4);
+    }
+    .logout-note {
+      margin-top: 24px;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.56);
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="glow"></div>
+  <div class="logout-card">
+    <div class="logout-icon">?</div>
+    <h1 class="logout-title">您已安全退出登录</h1>
+    <p class="logout-text">感谢使用本系统。为了您的账户安全，已完成退出操作。您可以点击下面按钮返回首页，或稍后继续浏览其他页面。</p>
+    <button class="logout-button" id="homeButton">返回首页</button>
+    <p class="logout-note">3秒后将自动跳转到首页。如果没有跳转，请手动点击。</p>
+  </div>
+  <script>
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loginUser');
+
+    const homeButton = document.getElementById('homeButton');
+    homeButton.addEventListener('click', () => {
+      window.location.href = '首页.html';
+    });
+    setTimeout(() => {
+      window.location.href = '首页.html';
+    }, 3000);
+  </script>
+    </body>
+</html>
+
+

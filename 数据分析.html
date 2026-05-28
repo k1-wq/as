@@ -1,0 +1,1851 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析 - 无人机控制系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 基础变量和重置 */
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #7209b7;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --info-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 容器布局 */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            background: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: var(--secondary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #3db8d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        /* 主导航栏 */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-item {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            text-decoration: none;
+            color: var(--gray-color);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 页面标题区域 */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 快速导航 */
+        .quick-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-nav-btn {
+            padding: 0.75rem 1.25rem;
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--dark-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .quick-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-nav-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        /* 统计概览 */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.battery {
+            border-top-color: var(--success-color);
+        }
+
+        .stat-card.altitude {
+            border-top-color: var(--primary-color);
+        }
+
+        .stat-card.speed {
+            border-top-color: var(--danger-color);
+        }
+
+        .stat-card.duration {
+            border-top-color: var(--info-color);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .battery .stat-icon {
+            background: linear-gradient(135deg, var(--success-color), #00d4aa);
+        }
+
+        .altitude .stat-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .speed .stat-icon {
+            background: linear-gradient(135deg, var(--danger-color), #ff4d8d);
+        }
+
+        .duration .stat-icon {
+            background: linear-gradient(135deg, var(--info-color), #2a8bf2);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+        }
+
+        .stat-unit {
+            font-size: 1rem;
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up {
+            color: var(--success-color);
+        }
+
+        .trend-down {
+            color: var(--danger-color);
+        }
+
+        /* 时间范围选择器 */
+        .time-range-selector {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .range-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .range-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            background: white;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .range-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .range-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .date-range-picker {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .date-input {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* 图表网格 */
+        .charts-container {
+            margin-bottom: 3rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            background: #f0f0f0;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-action-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* 飞行记录表格 */
+        .flight-records {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 3rem;
+        }
+
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .records-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .records-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .records-table-container {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .records-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .records-table th {
+            padding: 1rem;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .records-table tbody tr {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .records-table tbody tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .records-table td {
+            padding: 1rem;
+            color: var(--dark-color);
+            font-size: 0.95rem;
+        }
+
+        .flight-id {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .flight-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-in-progress {
+            background: rgba(72, 149, 239, 0.1);
+            color: var(--info-color);
+        }
+
+        .status-failed {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* KPI指标卡片 */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-color);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.95rem;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                padding: 0 1rem;
+                overflow-x: auto;
+            }
+            
+            .nav-item {
+                flex: 0 0 auto;
+            }
+            
+            .time-range-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .range-options {
+                justify-content: center;
+            }
+            
+            .date-range-picker {
+                flex-direction: column;
+            }
+            
+            .records-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .records-actions {
+                justify-content: center;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* 加载状态 */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="top-nav">
+            <div class="nav-container">
+                <a href="首页.html" class="logo">
+                    <i class="fas fa-drone logo-icon"></i>
+                    <span>无人机控制系统</span>
+                </a>
+                <div class="user-actions">
+                    <a href="首页.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        返回首页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主导航栏 -->
+        <nav class="main-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html" class="nav-link">
+                        <i class="fas fa-gamepad nav-icon"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html" class="nav-link">
+                        <i class="fas fa-map-marked-alt nav-icon"></i>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html" class="nav-link active">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html" class="nav-link">
+                        <i class="fas fa-tasks nav-icon"></i>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-chart-bar"></i> 无人机数据分析
+                </h1>
+                <p class="page-subtitle">实时监控无人机电量、高度、速度和飞行时长数据</p>
+            </div>
+
+            <!-- 快速导航 -->
+            <div class="quick-nav">
+                <a href="首页.html" class="quick-nav-btn">
+                    <i class="fas fa-home"></i> 首页
+                </a>
+                <a href="控制台.html" class="quick-nav-btn">
+                    <i class="fas fa-gamepad"></i> 控制台
+                </a>
+                <a href="地图.html" class="quick-nav-btn">
+                    <i class="fas fa-map-marked-alt"></i> 地图视图
+                </a>
+                <span class="quick-nav-btn active">
+                    <i class="fas fa-chart-bar"></i> 数据分析
+                </span>
+            </div>
+
+            <!-- KPI指标 -->
+            <div class="kpi-grid">
+                <div class="kpi-card fade-in-up">
+                    <div class="kpi-value" id="totalFlights">0</div>
+                    <div class="kpi-label">总飞行次数</div>
+                </div>
+                <div class="kpi-card fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="kpi-value" id="successRate">0%</div>
+                    <div class="kpi-label">任务成功率</div>
+                </div>
+                <div class="kpi-card fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="kpi-value" id="avgFlightTime">0</div>
+                    <div class="kpi-label">平均飞行时间(分钟)</div>
+                </div>
+                <div class="kpi-card fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="kpi-value" id="totalDistance">0</div>
+                    <div class="kpi-label">总飞行距离(km)</div>
+                </div>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="stats-overview">
+                <div class="stat-card battery fade-in-up">
+                    <div class="stat-icon">
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                    <div class="stat-label">平均电量消耗</div>
+                    <div class="stat-value">
+                        <span id="avgBattery">75</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>剩余电量充足</span>
+                    </div>
+                </div>
+
+                <div class="stat-card altitude fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="stat-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="stat-label">最高飞行高度</div>
+                    <div class="stat-value">
+                        <span id="maxAltitude">120</span>
+                        <span class="stat-unit">m</span>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-check-circle"></i>
+                        <span>安全范围内</span>
+                    </div>
+                </div>
+
+                <div class="stat-card speed fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="stat-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-label">平均飞行速度</div>
+                    <div class="stat-value">
+                        <span id="avgSpeed">15</span>
+                        <span class="stat-unit">km/h</span>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>稳定飞行</span>
+                    </div>
+                </div>
+
+                <div class="stat-card duration fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-label">总飞行时长</div>
+                    <div class="stat-value">
+                        <span id="totalDuration">45</span>
+                        <span class="stat-unit">分钟</span>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>3次飞行任务</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间范围选择器 -->
+            <div class="time-range-selector">
+                <div class="range-options">
+                    <button class="range-btn active" data-range="day">今日</button>
+                    <button class="range-btn" data-range="week">本周</button>
+                    <button class="range-btn" data-range="month">本月</button>
+                    <button class="range-btn" data-range="year">全年</button>
+                </div>
+                <div class="date-range-picker">
+                    <input type="date" class="date-input" id="startDate">
+                    <span>至</span>
+                    <input type="date" class="date-input" id="endDate">
+                    <button class="btn btn-primary" id="applyDateRange">
+                        <i class="fas fa-filter"></i> 应用筛选
+                    </button>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="charts-container">
+                <div class="charts-grid">
+                    <div class="chart-card fade-in-up">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-battery-three-quarters"></i> 电量变化趋势
+                            </h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="下载图表">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-action-btn" title="全屏查看">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="batteryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-mountain"></i> 高度变化曲线
+                            </h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="下载图表">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-action-btn" title="全屏查看">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="altitudeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-tachometer-alt"></i> 速度波动分析
+                            </h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="下载图表">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-action-btn" title="全屏查看">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="speedChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-clock"></i> 飞行时长分布
+                            </h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="下载图表">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-action-btn" title="全屏查看">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="durationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 飞行记录 -->
+            <div class="flight-records fade-in-up">
+                <div class="records-header">
+                    <h3 class="records-title">
+                        <i class="fas fa-plane"></i> 最近飞行记录
+                    </h3>
+                    <div class="records-actions">
+                        <button class="btn btn-success" id="refreshData">
+                            <i class="fas fa-sync-alt"></i> 刷新数据
+                        </button>
+                        <button class="btn btn-info" id="exportData">
+                            <i class="fas fa-file-export"></i> 导出数据
+                        </button>
+                    </div>
+                </div>
+                <div class="records-table-container">
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>飞行编号</th>
+                                <th>日期时间</th>
+                                <th>飞行时长</th>
+                                <th>最大高度</th>
+                                <th>平均速度</th>
+                                <th>电量消耗</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flightRecordsBody">
+                            <!-- 飞行记录将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>无人机控制系统 - 专业的无人机控制与管理平台</p>
+                    <p>提供全方位的无人机数据分析解决方案</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="首页.html">首页</a></li>
+                        <li><a href="控制台.html">控制台</a></li>
+                        <li><a href="地图.html">地图视图</a></li>
+                        <li><a href="客服中心.html">客服中心</a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p><i class="fas fa-envelope"></i> support@dronecontrol.com</p>
+                    <p><i class="fas fa-phone"></i> 400-888-9999</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 北京市朝阳区科技园</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 无人机控制系统. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 无人机数据分析系统
+        class DataAnalysisSystem {
+            constructor() {
+                this.charts = {};
+                this.currentTimeRange = 'day';
+                this.flightData = [];
+                this.init();
+            }
+
+            // 初始化系统
+            init() {
+                this.loadData();
+                this.initCharts();
+                this.bindEvents();
+                this.renderFlightRecords();
+                this.updateStats();
+            }
+
+            // 加载数据
+            loadData() {
+                // 从本地存储加载数据
+                const savedData = localStorage.getItem('droneFlightData');
+                if (savedData) {
+                    this.flightData = JSON.parse(savedData);
+                } else {
+                    // 生成示例数据
+                    this.generateSampleData();
+                    this.saveDataToStorage();
+                }
+            }
+
+            // 生成示例数据
+            generateSampleData() {
+                const now = new Date();
+                this.flightData = [
+                    {
+                        id: 'FL001',
+                        date: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+                        duration: 25,
+                        maxAltitude: 120,
+                        avgSpeed: 15,
+                        batteryConsumption: 30,
+                        status: 'completed',
+                        batteryData: this.generateRandomData(10, 100, 70),
+                        altitudeData: this.generateRandomData(10, 0, 120),
+                        speedData: this.generateRandomData(10, 10, 20),
+                        durationData: this.generateRandomData(10, 5, 30)
+                    },
+                    {
+                        id: 'FL002',
+                        date: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
+                        duration: 35,
+                        maxAltitude: 150,
+                        avgSpeed: 18,
+                        batteryConsumption: 45,
+                        status: 'completed',
+                        batteryData: this.generateRandomData(10, 100, 55),
+                        altitudeData: this.generateRandomData(10, 0, 150),
+                        speedData: this.generateRandomData(10, 12, 25),
+                        durationData: this.generateRandomData(10, 10, 40)
+                    },
+                    {
+                        id: 'FL003',
+                        date: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+                        duration: 20,
+                        maxAltitude: 80,
+                        avgSpeed: 12,
+                        batteryConsumption: 25,
+                        status: 'in-progress',
+                        batteryData: this.generateRandomData(10, 100, 75),
+                        altitudeData: this.generateRandomData(10, 0, 80),
+                        speedData: this.generateRandomData(10, 8, 15),
+                        durationData: this.generateRandomData(10, 3, 25)
+                    },
+                    {
+                        id: 'FL004',
+                        date: new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString(),
+                        duration: 15,
+                        maxAltitude: 100,
+                        avgSpeed: 16,
+                        batteryConsumption: 20,
+                        status: 'failed',
+                        batteryData: this.generateRandomData(10, 100, 80),
+                        altitudeData: this.generateRandomData(10, 0, 100),
+                        speedData: this.generateRandomData(10, 10, 18),
+                        durationData: this.generateRandomData(10, 2, 20)
+                    }
+                ];
+            }
+
+            // 生成随机数据
+            generateRandomData(count, min, max) {
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+                }
+                return data;
+            }
+
+            // 保存数据到本地存储
+            saveDataToStorage() {
+                localStorage.setItem('droneFlightData', JSON.stringify(this.flightData));
+            }
+
+            // 初始化图表
+            initCharts() {
+                this.initBatteryChart();
+                this.initAltitudeChart();
+                this.initSpeedChart();
+                this.initDurationChart();
+            }
+
+            // 初始化电量图表
+            initBatteryChart() {
+                const ctx = document.getElementById('batteryChart').getContext('2d');
+                this.charts.battery = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: this.generateTimeLabels(10),
+                        datasets: [{
+                            label: '电量百分比',
+                            data: this.getAggregatedData('batteryData'),
+                            borderColor: '#4cc9f0',
+                            backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4cc9f0',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#212529',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#4cc9f0',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'nearest'
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+
+            // 初始化高度图表
+            initAltitudeChart() {
+                const ctx = document.getElementById('altitudeChart').getContext('2d');
+                this.charts.altitude = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: this.generateTimeLabels(10),
+                        datasets: [{
+                            label: '飞行高度(m)',
+                            data: this.getAggregatedData('altitudeData'),
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4361ee',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#212529',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#4361ee',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    callback: function(value) {
+                                        return value + 'm';
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'nearest'
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+
+            // 初始化速度图表
+            initSpeedChart() {
+                const ctx = document.getElementById('speedChart').getContext('2d');
+                this.charts.speed = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: this.generateTimeLabels(10),
+                        datasets: [{
+                            label: '飞行速度(km/h)',
+                            data: this.getAggregatedData('speedData'),
+                            borderColor: '#f72585',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f72585',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#212529',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#f72585',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    callback: function(value) {
+                                        return value + 'km/h';
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'nearest'
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+
+            // 初始化时长图表
+            initDurationChart() {
+                const ctx = document.getElementById('durationChart').getContext('2d');
+                this.charts.duration = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: this.flightData.map(flight => flight.id),
+                        datasets: [{
+                            label: '飞行时长(分钟)',
+                            data: this.flightData.map(flight => flight.duration),
+                            backgroundColor: [
+                                'rgba(76, 201, 240, 0.7)',
+                                'rgba(67, 97, 238, 0.7)',
+                                'rgba(247, 37, 133, 0.7)',
+                                'rgba(72, 149, 239, 0.7)'
+                            ],
+                            borderColor: [
+                                '#4cc9f0',
+                                '#4361ee',
+                                '#f72585',
+                                '#4895ef'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#212529',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#4895ef',
+                                borderWidth: 1,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `时长: ${context.raw}分钟`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    callback: function(value) {
+                                        return value + '分钟';
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+
+            // 生成时间标签
+            generateTimeLabels(count) {
+                const labels = [];
+                const now = new Date();
+                for (let i = count - 1; i >= 0; i--) {
+                    const time = new Date(now.getTime() - i * 10 * 60 * 1000);
+                    labels.push(time.getHours().toString().padStart(2, '0') + ':' + 
+                                time.getMinutes().toString().padStart(2, '0'));
+                }
+                return labels;
+            }
+
+            // 获取聚合数据
+            getAggregatedData(dataKey) {
+                if (this.flightData.length === 0) return [];
+                
+                const aggregated = [];
+                const dataPoints = this.flightData[0][dataKey].length;
+                
+                for (let i = 0; i < dataPoints; i++) {
+                    let sum = 0;
+                    let count = 0;
+                    
+                    for (const flight of this.flightData) {
+                        if (flight[dataKey] && flight[dataKey][i] !== undefined) {
+                            sum += flight[dataKey][i];
+                            count++;
+                        }
+                    }
+                    
+                    aggregated.push(count > 0 ? Math.round(sum / count) : 0);
+                }
+                
+                return aggregated;
+            }
+
+            // 绑定事件
+            bindEvents() {
+                // 时间范围选择
+                document.querySelectorAll('.range-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentTimeRange = e.target.dataset.range;
+                        this.updateCharts();
+                    });
+                });
+
+                // 日期范围应用
+                document.getElementById('applyDateRange').addEventListener('click', () => {
+                    this.updateCharts();
+                });
+
+                // 刷新数据
+                document.getElementById('refreshData').addEventListener('click', () => {
+                    this.refreshData();
+                });
+
+                // 导出数据
+                document.getElementById('exportData').addEventListener('click', () => {
+                    this.exportData();
+                });
+
+                // 图表操作按钮
+                document.querySelectorAll('.chart-action-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.closest('button').querySelector('i').className;
+                        if (action.includes('fa-download')) {
+                            this.downloadChart(e.target.closest('.chart-card'));
+                        } else if (action.includes('fa-expand')) {
+                            this.toggleFullscreen(e.target.closest('.chart-card'));
+                        }
+                    });
+                });
+            }
+
+            // 更新图表
+            updateCharts() {
+                // 更新所有图表的数据
+                this.charts.battery.data.datasets[0].data = this.getAggregatedData('batteryData');
+                this.charts.battery.update();
+
+                this.charts.altitude.data.datasets[0].data = this.getAggregatedData('altitudeData');
+                this.charts.altitude.update();
+
+                this.charts.speed.data.datasets[0].data = this.getAggregatedData('speedData');
+                this.charts.speed.update();
+
+                this.charts.duration.data.labels = this.flightData.map(flight => flight.id);
+                this.charts.duration.data.datasets[0].data = this.flightData.map(flight => flight.duration);
+                this.charts.duration.update();
+            }
+
+            // 渲染飞行记录
+            renderFlightRecords() {
+                const tbody = document.getElementById('flightRecordsBody');
+                
+                if (this.flightData.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="empty-text">暂无飞行记录</div>
+                                <div class="empty-subtext">开始飞行任务后，数据将显示在这里</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = this.flightData.map(flight => this.createFlightRecordRow(flight)).join('');
+            }
+
+            // 创建飞行记录行
+            createFlightRecordRow(flight) {
+                const date = new Date(flight.date);
+                const statusText = {
+                    'completed': '已完成',
+                    'in-progress': '进行中',
+                    'failed': '失败'
+                };
+                
+                const statusClass = {
+                    'completed': 'status-completed',
+                    'in-progress': 'status-in-progress',
+                    'failed': 'status-failed'
+                };
+
+                return `
+                    <tr>
+                        <td class="flight-id">${flight.id}</td>
+                        <td>${date.toLocaleDateString('zh-CN')} ${date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</td>
+                        <td>${flight.duration} 分钟</td>
+                        <td>${flight.maxAltitude} m</td>
+                        <td>${flight.avgSpeed} km/h</td>
+                        <td>${flight.batteryConsumption}%</td>
+                        <td><span class="flight-status ${statusClass[flight.status]}">${statusText[flight.status]}</span></td>
+                    </tr>
+                `;
+            }
+
+            // 更新统计数据
+            updateStats() {
+                if (this.flightData.length === 0) return;
+
+                // 计算统计数据
+                const totalFlights = this.flightData.length;
+                const completedFlights = this.flightData.filter(f => f.status === 'completed').length;
+                const successRate = Math.round((completedFlights / totalFlights) * 100);
+                const avgFlightTime = Math.round(this.flightData.reduce((sum, f) => sum + f.duration, 0) / totalFlights);
+                const totalDistance = Math.round(this.flightData.reduce((sum, f) => sum + (f.duration * f.avgSpeed / 60), 0));
+                
+                const avgBattery = Math.round(this.flightData.reduce((sum, f) => sum + f.batteryConsumption, 0) / totalFlights);
+                const maxAltitude = Math.max(...this.flightData.map(f => f.maxAltitude));
+                const avgSpeed = Math.round(this.flightData.reduce((sum, f) => sum + f.avgSpeed, 0) / totalFlights);
+                const totalDuration = this.flightData.reduce((sum, f) => sum + f.duration, 0);
+
+                // 更新显示
+                document.getElementById('totalFlights').textContent = totalFlights;
+                document.getElementById('successRate').textContent = successRate + '%';
+                document.getElementById('avgFlightTime').textContent = avgFlightTime;
+                document.getElementById('totalDistance').textContent = totalDistance;
+
+                document.getElementById('avgBattery').textContent = avgBattery;
+                document.getElementById('maxAltitude').textContent = maxAltitude;
+                document.getElementById('avgSpeed').textContent = avgSpeed;
+                document.getElementById('totalDuration').textContent = totalDuration;
+            }
+
+            // 刷新数据
+            refreshData() {
+                // 显示加载状态
+                const refreshBtn = document.getElementById('refreshData');
+                const originalHtml = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刷新中...';
+                refreshBtn.disabled = true;
+
+                // 模拟数据刷新
+                setTimeout(() => {
+                    // 生成新的飞行数据
+                    const newFlight = {
+                        id: 'FL' + (this.flightData.length + 1).toString().padStart(3, '0'),
+                        date: new Date().toISOString(),
+                        duration: Math.floor(Math.random() * 30) + 10,
+                        maxAltitude: Math.floor(Math.random() * 150) + 50,
+                        avgSpeed: Math.floor(Math.random() * 15) + 10,
+                        batteryConsumption: Math.floor(Math.random() * 40) + 20,
+                        status: Math.random() > 0.2 ? 'completed' : 'failed',
+                        batteryData: this.generateRandomData(10, 100, 60),
+                        altitudeData: this.generateRandomData(10, 0, 150),
+                        speedData: this.generateRandomData(10, 8, 20),
+                        durationData: this.generateRandomData(10, 5, 35)
+                    };
+
+                    this.flightData.unshift(newFlight);
+                    if (this.flightData.length > 10) {
+                        this.flightData = this.flightData.slice(0, 10);
+                    }
+
+                    this.saveDataToStorage();
+                    this.updateCharts();
+                    this.renderFlightRecords();
+                    this.updateStats();
+
+                    // 恢复按钮状态
+                    refreshBtn.innerHTML = originalHtml;
+                    refreshBtn.disabled = false;
+
+                    this.showNotification('数据刷新成功', 'success');
+                }, 1000);
+            }
+
+            // 导出数据
+            exportData() {
+                const dataStr = JSON.stringify(this.flightData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `无人机飞行数据_${new Date().toISOString().slice(0, 10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                this.showNotification('数据导出成功', 'success');
+            }
+
+            // 下载图表
+            downloadChart(chartCard) {
+                const chartId = chartCard.querySelector('canvas').id;
+                const chart = this.charts[chartId.replace('Chart', '').toLowerCase()];
+                
+                const link = document.createElement('a');
+                link.download = `图表_${chartId}_${new Date().toISOString().slice(0, 10)}.png`;
+                link.href = chart.toBase64Image();
+                link.click();
+                
+                this.showNotification('图表下载成功', 'success');
+            }
+
+            // 切换全屏
+            toggleFullscreen(chartCard) {
+                if (!document.fullscreenElement) {
+                    chartCard.requestFullscreen().catch(err => {
+                        console.error(`全屏请求失败: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+
+            // 显示通知
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    border-radius: var(--border-radius);
+                    color: white;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                    z-index: 3000;
+                    animation: slideInRight 0.3s ease;
+                    font-weight: 500;
+                    max-width: 300px;
+                `;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // 页面加载完成后初始化数据分析系统
+        document.addEventListener('DOMContentLoaded', () => {
+            new DataAnalysisSystem();
+        });
+    </script>
+</body>
+</html>

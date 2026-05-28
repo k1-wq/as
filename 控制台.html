@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无人机控制系统控制台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 百度地图API -->
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=oLL0cuF6jJT5QGMbU97VEEX1fcvobdmf"></script>
+    
+    <!-- 配置Tailwind自定义主�?-->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .panel-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .grid-layout {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .control-slider {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 8px;
+                border-radius: 4px;
+                background: #e5e7eb;
+                outline: none;
+                transition: all 0.3s;
+            }
+            
+            .control-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #165DFF;
+                cursor: pointer;
+                box-shadow: 0 2px 6px rgba(22, 93, 255, 0.3);
+            }
+            
+            .control-slider::-moz-range-thumb {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #165DFF;
+                cursor: pointer;
+                border: none;
+                box-shadow: 0 2px 6px rgba(22, 93, 255, 0.3);
+            }
+            
+            .dark .control-slider {
+                background: #374151;
+            }
+            
+            .joystick-container {
+                position: relative;
+                width: 200px;
+                height: 200px;
+                margin: 0 auto;
+            }
+            
+            .joystick-base {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: linear-gradient(145deg, #e6e6e6, #ffffff);
+                box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+            }
+            
+            .dark .joystick-base {
+                background: linear-gradient(145deg, #2d3748, #1a202c);
+                box-shadow: 5px 5px 10px #0f1419, -5px -5px 10px #2d3748;
+            }
+            
+            .joystick-handle {
+                position: absolute;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(145deg, #165DFF, #0e4bd1);
+                box-shadow: 3px 3px 6px rgba(22, 93, 255, 0.3);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                cursor: move;
+                transition: transform 0.1s;
+            }
+            
+            .joystick-handle:active {
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 dark:bg-dark text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-300">
+    <!-- 顶部导航�?-->
+    <header class="bg-white dark:bg-gray-800 shadow-sm fixed w-full top-0 z-50 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="首页.html" style="text-decoration: none; color: inherit;">
+                    <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                </a>
+                <h1 class="text-xl font-bold">无人机控制系</h1>
+            </div>
+            
+            
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5 sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <svg class="w-5 h-5 moon-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+                
+                <div class="relative">
+                    <button id="notificationBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span id="notificationBadge" class="absolute top-0 right-0 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                    
+                    <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-10 transition-all duration-300">
+                        <h3 class="font-semibold mb-2">系统通知</h3>
+                        <div id="notificationList" class="space-y-2 max-h-60 overflow-y-auto">
+                            <div class="p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
+                                <p class="font-medium">系统就绪</p>
+                                <p class="text-xs text-gray-500">所有系统正常运行</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full">
+                    <span class="text-sm font-medium">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜�?-->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full top-16 z-40 transition-colors duration-300">
+        <div class="container mx-auto px-4">
+            <ul class="flex space-x-1 overflow-x-auto">
+                <li class="nav-item">
+                    <a href="首页.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">🏠</span>首页
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">🔗</span>设备连接
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">🗺️</span>地图视图
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html" class="block px-4 py-3 text-sm font-medium text-primary bg-gray-50 dark:bg-gray-700 rounded-t-lg border-b-2 border-primary whitespace-nowrap">
+                        <span class="mr-1">🎮</span>控制台
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">📋</span>任务管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">📊</span>数据分析
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">📝</span>飞行记录
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="通知.html" class="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors whitespace-nowrap">
+                        <span class="mr-1">🔔</span>通知中心
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pt-36 pb-10">
+        <!-- 快速导�?-->
+        <div class="mb-6 flex gap-3 flex-wrap">
+            <a href="首页.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                🏠 首页
+            </a>
+            <a href="连接.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                🔗 设备连接
+            </a>
+            <a href="地图.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                🗺️ 地图视图
+            </a>
+            <span class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm text-sm font-medium">
+                🎮 控制台
+            </span>
+            <a href="任务管理.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                📋 任务管理
+            </a>
+            <a href="数据分析.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                📊 数据分析
+            </a>
+            <a href="飞行记录.html" class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-medium">
+                📝 飞行记录
+            </a>
+        </div>
+        
+        <!-- 飞行状态概�?-->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">飞行状态</p>
+                            <p id="flightStatus" class="text-xl font-bold text-success">待机</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">电池电量</p>
+                            <p id="batteryLevel" class="text-xl font-bold">100%</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div id="batteryProgress" class="h-full bg-success rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">飞行高度</p>
+                            <p id="flightAltitude" class="text-xl font-bold">0 m</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">飞行速度</p>
+                            <p id="flightSpeed" class="text-xl font-bold">0 m/s</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心控制区和控制面板 -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 实时视频�?-->
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">实时视频</h2>
+                    <div class="flex space-x-2">
+                        <button id="recordBtn" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            录制
+                        </button>
+                        <button id="photoBtn" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            拍照
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="relative aspect-video bg-gray-900 rounded overflow-hidden">
+                    <div id="videoStream" class="w-full h-full flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-gray-600 mx-auto mb-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-gray-400">实时视频流（模拟）</p>
+                            <p class="text-gray-500 text-sm mt-1">等待连接...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 视频控制 overlay -->
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full flex items-center space-x-4">
+                        <button class="hover:text-primary transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
+                            </svg>
+                        </button>
+                        <span class="text-sm">LIVE</span>
+                        <button class="hover:text-primary transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制面板（整�?111.html的功能） -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                    </svg>
+                    飞行控制
+                </h2>
+                
+                <!-- 方向控制 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">方向控制</label>
+                    <div class="joystick-container">
+                        <div class="joystick-base"></div>
+                        <div class="joystick-handle" id="joystickHandle"></div>
+                    </div>
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-center">
+                            <span class="text-gray-500">X轴</span>
+                            <span id="directionX" class="font-mono font-bold ml-1">0</span>
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-center">
+                            <span class="text-gray-500">Y轴</span>
+                            <span id="directionY" class="font-mono font-bold ml-1">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高度控制滑块 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">
+                        高度控制: <span id="altitudeValue" class="text-primary font-bold">0</span>m
+                    </label>
+                    <input type="range" id="altitudeSlider" min="0" max="100" value="0" class="control-slider">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0m</span>
+                        <span>50m</span>
+                        <span>100m</span>
+                    </div>
+                </div>
+
+                <!-- 状态监�?-->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <h3 class="text-sm font-semibold mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        实时监控
+                    </h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">高度:</span>
+                            <span id="monitorAltitude" class="font-mono font-bold">0 m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">速度:</span>
+                            <span id="monitorSpeed" class="font-mono font-bold">0 m/s</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">电池:</span>
+                            <span id="monitorBattery" class="font-mono font-bold text-success">100%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">信号:</span>
+                            <span id="monitorSignal" class="font-mono font-bold text-success">良好</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 参数设置 -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        参数设置
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">最大速度 (m/s)</label>
+                            <input type="number" id="maxSpeed" min="0" max="20" value="10" class="w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">上升速率 (m/s)</label>
+                            <input type="number" id="climbRate" min="0" max="5" value="2" step="0.5" class="w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 地图和控制按钮区 -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 地图显示 -->
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">飞行地图</h2>
+                    <div class="flex space-x-2">
+                        <button id="centerMapBtn" class="px-3 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90 transition-colors">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            居中
+                        </button>
+                    </div>
+                </div>
+                <div id="map" class="w-full h-96 rounded-lg"></div>
+            </div>
+
+            <!-- 快速操作按钮 -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors duration-300">
+                <h2 class="text-lg font-semibold mb-4">快速操作</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="takeoffBtn" class="p-4 bg-success text-white rounded-lg hover:bg-success/90 transition-all transform hover:scale-105 flex flex-col items-center">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        <span class="text-sm font-medium">起飞</span>
+                    </button>
+                    
+                    <button id="landBtn" class="p-4 bg-warning text-white rounded-lg hover:bg-warning/90 transition-all transform hover:scale-105 flex flex-col items-center">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        <span class="text-sm font-medium">降落</span>
+                    </button>
+                    
+                    <button id="returnHomeBtn" class="p-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all transform hover:scale-105 flex flex-col items-center">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="text-sm font-medium">返航</span>
+                    </button>
+                    
+                    <button id="emergencyStopBtn" class="p-4 bg-danger text-white rounded-lg hover:bg-danger/90 transition-all transform hover:scale-105 flex flex-col items-center">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm font-medium">急停</span>
+                    </button>
+                </div>
+
+                <!-- 飞行模式 -->
+                <div class="mt-6">
+                    <h3 class="text-sm font-semibold mb-3">飞行模式</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="flightMode" value="normal" checked class="mr-3 text-primary">
+                            <div>
+                                <p class="text-sm font-medium">普通模式</p>
+                                <p class="text-xs text-gray-500">标准飞行控制</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="flightMode" value="sport" class="mr-3 text-primary">
+                            <div>
+                                <p class="text-sm font-medium">运动模式</p>
+                                <p class="text-xs text-gray-500">高速灵活操作</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="flightMode" value="cinematic" class="mr-3 text-primary">
+                            <div>
+                                <p class="text-sm font-medium"> cinematic模式</p>
+                                <p class="text-xs text-gray-500">平滑稳定拍摄</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="控制台.js"></script>
+      
+   
+    </body>
+</html>
+

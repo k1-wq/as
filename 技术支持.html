@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术支持 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        /* ==================== 全局样式 ==================== */
+        .tech-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tech-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .tech-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .tech-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* ==================== 技术分类卡片 ==================== */
+        .tech-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .tech-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .tech-card h3 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-card .version {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .tech-description {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .tech-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tech-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .tech-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #6c757d;
+        }
+
+        .code-keyword {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .code-string {
+            color: #28a745;
+        }
+
+        /* ==================== API文档样式 ==================== */
+        .api-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .api-item {
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+        }
+
+        .api-item:last-child {
+            border-bottom: none;
+        }
+
+        .api-name {
+            font-family: 'Courier New', monospace;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .api-desc {
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .api-params {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .param-item {
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .param-name {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .param-type {
+            color: #28a745;
+        }
+
+        /* ==================== 架构图样式 ==================== */
+        .architecture-diagram {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .diagram-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .layer {
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .layer-presentation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .layer-business {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .layer-data {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .layer-arrow {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        /* ==================== 依赖列表 ==================== */
+        .dependency-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .dependency-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .dependency-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .dependency-version {
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .dependency-purpose {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 768px) {
+            .tech-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== 动画效果 ==================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tech-section {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        /* ==================== 导航标签 ==================== */
+        .tech-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tech-nav-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tech-nav-btn:hover,
+        .tech-nav-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="showLoginModal()">登录</button>
+                <button class="btn-register" onclick="showRegisterModal()">注册</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜单 -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#recommend">
+                        <span class="nav-icon">?</span>
+                        <span class="nav-text">推荐</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="客服.html">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="tech-container">
+            <!-- 页面标题 -->
+            <div class="tech-header">
+                <h1>🛠️ 技术支持文档</h1>
+                <p>DroneControl 智能无人机控制平台 - 完整技术栈说明</p>
+            </div>
+
+            <!-- 快速导航 -->
+            <div class="tech-nav">
+                <button class="tech-nav-btn active" onclick="scrollToSection('frontend')">前端技术</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('css')">CSS技术</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('javascript')">JavaScript</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('apis')">API集成</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('storage')">数据存储</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('animation')">动画效果</button>
+                <button class="tech-nav-btn" onclick="scrollToSection('architecture')">系统架构</button>
+            </div>
+
+            <!-- ==================== 前端核心技术 ==================== -->
+            <section id="frontend" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🌐</span>
+                    前端核心技术    
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- HTML5 -->
+                    <div class="tech-card">
+                        <h3>
+                            HTML5
+                            <span class="version">标准</span>
+                        </h3>
+                        <p class="tech-description">
+                            使用语义化HTML5标签构建页面结构，提供良好的可访问性和SEO优化支持
+                        </p>
+                        <ul class="tech-features">
+                            <li>语义化标签：header, nav, main, section, footer</li>
+                            <li>表单验证：required, pattern, type属性</li>
+                            <li>响应式meta标签：viewport配置</li>
+                            <li>模态框：dialog元素实现</li>
+                            <li>本地存储API集成</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">&lt;!-- 语义化HTML结构 --&gt;</span>
+&lt;<span class="code-keyword">header</span> <span class="code-keyword">class</span>=<span class="code-string">"top-header"</span>&gt;
+    &lt;div <span class="code-keyword">class</span>=<span class="code-string">"container"</span>&gt;
+        &lt;nav&gt;...&lt;/nav&gt;
+    &lt;/div&gt;
+&lt;/<span class="code-keyword">header</span>&gt;
+                        </div>
+                    </div>
+
+                    <!-- CSS3 -->
+                    <div class="tech-card">
+                        <h3>
+                            CSS3
+                            <span class="version">现代</span>
+                        </h3>
+                        <p class="tech-description">
+                            采用现代CSS3特性，包括Flexbox、Grid布局、渐变、动画等高级功能，提升页面美观度和用户体验
+                        </p>
+                        <ul class="tech-features">
+                            <li>Flexbox弹性布局</li>
+                            <li>CSS Grid网格布局</li>
+                            <li>线性渐变和径向渐变</li>
+                            <li>CSS动画和过渡效果</li>
+                            <li>自定义属性（CSS变量）</li>
+                            <li>媒体查询响应式设计</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* Flexbox布局示例 */</span>
+.<span class="code-keyword">container</span> {
+    <span class="code-keyword">display</span>: flex;
+    <span class="code-keyword">justify-content</span>: space-between;
+    <span class="code-keyword">align-items</span>: center;
+    <span class="code-keyword">gap</span>: <span class="code-string">20px</span>;
+}
+                        </div>
+                    </div>
+
+                    <!-- Tailwind CSS -->
+                    <div class="tech-card">
+                        <h3>
+                            Tailwind CSS
+                            <span class="version">CDN</span>
+                        </h3>
+                        <p class="tech-description">
+                            在控制台页面使用Tailwind CSS实用优先的CSS框架，快速构建现代化界面
+                        </p>
+                        <ul class="tech-features">
+                            <li>实用类优先的开发方式</li>
+                            <li>响应式设计工具类</li>
+                            <li>暗色模式支持</li>
+                            <li>自定义主题配置</li>
+                            <li>JIT即时编译模式</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">&lt;!-- Tailwind实用类示例 --&gt;</span>
+&lt;<span class="code-keyword">div</span> <span class="code-keyword">class</span>=<span class="code-string">"bg-white rounded-lg shadow-lg p-6"</span>&gt;
+    &lt;h2 <span class="code-keyword">class</span>=<span class="code-string">"text-2xl font-bold text-gray-800"</span>&gt;
+        标题
+    &lt;/h2&gt;
+&lt;/<span class="code-keyword">div</span>&gt;
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== CSS高级技术 ==================== -->
+            <section id="css" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🎨</span>
+                    CSS高级技术
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- CSS Grid布局 -->
+                    <div class="tech-card">
+                        <h3>CSS Grid 网格布局</h3>
+                        <p class="tech-description">
+                            使用CSS Grid创建复杂的二维布局系统，适用于卡片网格、仪表板等场景
+                        </p>
+                        <ul class="tech-features">
+                            <li>auto-fit和minmax()响应式列</li>
+                            <li>grid-template-areas命名区域</li>
+                            <li>gap属性控制间距</li>
+                            <li>grid-auto-flow自动放置</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 响应式网格布局 */</span>
+.<span class="code-keyword">grid-layout</span> {
+    <span class="code-keyword">display</span>: grid;
+    <span class="code-keyword">grid-template-columns</span>: 
+        <span class="code-string">repeat(auto-fit, minmax(280px, 1fr))</span>;
+    <span class="code-keyword">gap</span>: <span class="code-string">1.5rem</span>;
+}
+                        </div>
+                    </div>
+
+                    <!-- CSS动画 -->
+                    <div class="tech-card">
+                        <h3>CSS Animations & Transitions</h3>
+                        <p class="tech-description">
+                            使用CSS关键帧动画和过渡效果，提供流畅的用户交互体验
+                        </p>
+                        <ul class="tech-features">
+                            <li>@keyframes定义动画序列</li>
+                            <li>transition平滑过渡</li>
+                            <li>transform变换性能优化</li>
+                            <li>animation-delay延迟控制</li>
+                            <li>cubic-bezier自定义缓动函数</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 淡入向上动画 */</span>
+@<span class="code-keyword">keyframes</span> fadeInUp {
+    <span class="code-keyword">from</span> {
+        <span class="code-keyword">opacity</span>: <span class="code-string">0</span>;
+        <span class="code-keyword">transform</span>: <span class="code-string">translateY(30px)</span>;
+    }
+    <span class="code-keyword">to</span> {
+        <span class="code-keyword">opacity</span>: <span class="code-string">1</span>;
+        <span class="code-keyword">transform</span>: <span class="code-string">translateY(0)</span>;
+    }
+}
+                        </div>
+                    </div>
+
+                    <!-- 渐变和阴�?-->
+                    <div class="tech-card">
+                        <h3>Gradients & Shadows</h3>
+                        <p class="tech-description">
+                            使用线性渐变、径向渐变和多层阴影创造视觉层次和深度感
+                        </p>
+                        <ul class="tech-features">
+                            <li>linear-gradient线性渐变背景</li>
+                            <li>radial-gradient径向渐变</li>
+                            <li>box-shadow多层阴影效果</li>
+                            <li>text-shadow文字阴影</li>
+                            <li>backdrop-filter毛玻璃效果</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 渐变背景示例 */</span>
+.<span class="code-keyword">gradient-bg</span> {
+    <span class="code-keyword">background</span>: <span class="code-string">linear-gradient(
+        135deg, 
+        #667eea 0%, 
+        #764ba2 100%
+    )</span>;
+    <span class="code-keyword">box-shadow</span>: <span class="code-string">0 10px 30px 
+        rgba(102, 126, 234, 0.3)</span>;
+}
+                        </div>
+                    </div>
+
+                    <!-- 响应式设计 -->
+                    <div class="tech-card">
+                        <h3>Responsive Design</h3>
+                        <p class="tech-description">
+                            采用移动优先的响应式设计策略，确保在所有设备上都有良好的显示效果
+                        </p>
+                        <ul class="tech-features">
+                            <li>@media查询断点设置</li>
+                            <li>相对单位（rem, em, %, vw, vh</li>
+                            <li>flex-wrap自动换行</li>
+                            <li>clamp()流体排版</li>
+                            <li>aspect-ratio保持比例</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 响应式断点 */</span>
+@<span class="code-keyword">media</span> (<span class="code-keyword">max-width</span>: <span class="code-string">768px</span>) {
+    .<span class="code-keyword">grid-layout</span> {
+        <span class="code-keyword">grid-template-columns</span>: <span class="code-string">1fr</span>;
+    }
+}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== JavaScript技术 ==================== -->
+            <section id="javascript" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">⚙️</span>
+                    JavaScript 技术栈
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- Vanilla JavaScript -->
+                    <div class="tech-card">
+                        <h3>
+                            Vanilla JavaScript
+                            <span class="version">ES6+</span>
+                        </h3>
+                        <p class="tech-description">
+                            使用原生JavaScript ES6+特性，无需框架依赖，轻量高效
+                        </p>
+                        <ul class="tech-features">
+                            <li>箭头函数和模板字符串</li>
+                            <li>解构赋值和展开运算符</li>
+                            <li>Promise和async/await异步处理</li>
+                            <li>模块化编程（import/export）</li>
+                            <li>DOM操作和事件委托</li>
+                            <li>Fetch API网络请求</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// ES6+ 现代JavaScript示例</span>
+<span class="code-keyword">const</span> loadDroneStatus = <span class="code-keyword">async</span> () => {
+    <span class="code-keyword">const</span> savedStatus = localStorage
+        .getItem(<span class="code-string">'droneStatus'</span>);
+    
+    <span class="code-keyword">if</span> (savedStatus) {
+        <span class="code-keyword">const</span> droneData = JSON.parse(savedStatus);
+        updateDisplay(droneData);
+    }
+};
+                        </div>
+                    </div>
+
+                    <!-- DOM操作 -->
+                    <div class="tech-card">
+                        <h3>DOM Manipulation</h3>
+                        <p class="tech-description">
+                            高效的DOM操作方法，包括动态内容渲染、事件处理和元素操作
+                        </p>
+                        <ul class="tech-features">
+                            <li>querySelector/querySelectorAll选择器</li>
+                            <li>createElement动态创建元素</li>
+                            <li>innerHTML/template literals渲染</li>
+                            <li>addEventListener事件监听</li>
+                            <li>classList类名操作</li>
+                            <li>dataset数据属性访问</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 动态渲染表格</span>
+tbody.innerHTML = records
+    .<span class="code-keyword">map</span>(record => <span class="code-string">`
+        &lt;tr&gt;
+            &lt;td&gt;${record.id}&lt;/td&gt;
+            &lt;td&gt;${record.date}&lt;/td&gt;
+        &lt;/tr&gt;
+    `</span>)
+    .<span class="code-keyword">join</span>(<span class="code-string">''</span>);
+                        </div>
+                    </div>
+
+                    <!-- 事件处理 -->
+                    <div class="tech-card">
+                        <h3>Event Handling</h3>
+                        <p class="tech-description">
+                            完善的事件处理机制，包括点击、滚动、表单提交等各种交互事件
+                        </p>
+                        <ul class="tech-features">
+                            <li>事件委托优化性能</li>
+                            <li>preventDefault阻止默认行为</li>
+                            <li>stopPropagation阻止冒泡</li>
+                            <li>DOMContentLoaded就绪事件</li>
+                            <li>resize和scroll事件节流</li>
+                            <li>自定义事件dispatchEvent</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 事件委托示例</span>
+document.<span class="code-keyword">addEventListener</span>(<span class="code-string">'click'</span>, (e) => {
+    <span class="code-keyword">if</span> (e.target.matches(<span class="code-string">'.page-btn'</span>)) {
+        <span class="code-keyword">const</span> page = e.target.dataset.page;
+        changePage(page);
+    }
+});
+                        </div>
+                    </div>
+
+                    <!-- 分页逻辑 -->
+                    <div class="tech-card">
+                        <h3>Pagination Logic</h3>
+                        <p class="tech-description">
+                            完整的客户端分页实现，包括数据切片、页码计算和UI更新
+                        </p>
+                        <ul class="tech-features">
+                            <li>数组slice方法数据切片</li>
+                            <li>Math.ceil计算总页数</li>
+                            <li>当前页状态管理</li>
+                            <li>页码范围智能显示</li>
+                            <li>上一页下一页边界检查</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 分页核心逻辑</span>
+<span class="code-keyword">const</span> startIndex = (currentPage - 1) * perPage;
+<span class="code-keyword">const</span> endIndex = startIndex + perPage;
+<span class="code-keyword">const</span> pageData = allData
+    .<span class="code-keyword">slice</span>(startIndex, endIndex);
+
+<span class="code-keyword">const</span> totalPages = Math
+    .<span class="code-keyword">ceil</span>(allData.length / perPage);
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== API集成 ==================== -->
+            <section id="apis" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🔌</span>
+                    第三方API集成
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- 百度地图API -->
+                    <div class="tech-card">
+                        <h3>
+                            百度地图 API
+                            <span class="version">v3.0</span>
+                        </h3>
+                        <p class="tech-description">
+                            集成百度地图JavaScript API，实现无人机实时位置监控、轨迹回放和地理围栏功能
+                        </p>
+                        <ul class="tech-features">
+                            <li>BMap.Map地图实例创建</li>
+                            <li>BMap.Marker标记点添加</li>
+                            <li>BMap.Polyline轨迹绘制</li>
+                            <li>地理编码和逆地理编码</li>
+                            <li>地图控件（缩放、平移、比例尺）</li>
+                            <li>信息窗口InfoWindow展示</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">&lt;!-- 引入百度地图API --&gt;</span>
+&lt;<span class="code-keyword">script</span> <span class="code-keyword">src</span>=<span class="code-string">"https://api.map.baidu.com/api?v=3.0&ak=YOUR_AK"</span>&gt;&lt;/<span class="code-keyword">script</span>&gt;
+
+<span class="code-comment">// 初始化地图</span>
+<span class="code-keyword">const</span> map = <span class="code-keyword">new</span> BMap.Map(<span class="code-string">"mapContainer"</span>);
+map.centerAndZoom(
+    <span class="code-keyword">new</span> BMap.Point(116.404, 39.915), 
+    <span class="code-string">15</span>
+);
+                        </div>
+                    </div>
+
+                    <!-- Chart.js图表-->
+                    <div class="tech-card">
+                        <h3>
+                            Chart.js
+                            <span class="version">Latest</span>
+                        </h3>
+                        <p class="tech-description">
+                            使用Chart.js创建交互式数据可视化图表，展示飞行数据和统计分析
+                        </p>
+                        <ul class="tech-features">
+                            <li>折线图Line Chart趋势分析</li>
+                            <li>柱状图Bar Chart对比展示</li>
+                            <li>饼图Pie Chart占比分析</li>
+                            <li>雷达图Radar Chart多维数据</li>
+                            <li>响应式图表自适应</li>
+                            <li>动画效果和交互提升</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 创建飞行高度图表</span>
+<span class="code-keyword">const</span> chart = <span class="code-keyword">new</span> Chart(ctx, {
+    <span class="code-keyword">type</span>: <span class="code-string">'line'</span>,
+    <span class="code-keyword">data</span>: {
+        <span class="code-keyword">labels</span>: timeLabels,
+        <span class="code-keyword">datasets</span>: [{
+            <span class="code-keyword">label</span>: <span class="code-string">'飞行高度'</span>,
+            <span class="code-keyword">data</span>: altitudeData,
+            <span class="code-keyword">borderColor</span>: <span class="code-string">'#667eea'</span>
+        }]
+    }
+});
+                        </div>
+                    </div>
+
+                    <!-- ECharts图表 -->
+                    <div class="tech-card">
+                        <h3>
+                            Apache ECharts
+                            <span class="version">5.x</span>
+                        </h3>
+                        <p class="tech-description">
+                            使用ECharts创建高性能、丰富的数据可视化图表，支持大数据量渲染和复杂交互
+                        </p>
+                        <ul class="tech-features">
+                            <li>Canvas渲染高性能</li>
+                            <li>丰富的图表类型</li>
+                            <li>交互式数据探索</li>
+                            <li>主题定制能力</li>
+                            <li>移动端适配</li>
+                            <li>数据缩放和漫游</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// ECharts初始化</span>
+<span class="code-keyword">const</span> myChart = echarts
+    .<span class="code-keyword">init</span>(document.getElementById(<span class="code-string">'chart'</span>));
+
+myChart.setOption({
+    <span class="code-keyword">title</span>: { <span class="code-keyword">text</span>: <span class="code-string">'飞行数据'</span> },
+    <span class="code-keyword">series</span>: [{
+        <span class="code-keyword">type</span>: <span class="code-string">'line'</span>,
+        <span class="code-keyword">data</span>: [120, 200, 150]
+    }]
+});
+                        </div>
+                    </div>
+
+                    <!-- Coze AI SDK -->
+                    <div class="tech-card">
+                        <h3>
+                            Coze AI Chat SDK
+                            <span class="version">1.2.0</span>
+                        </h3>
+                        <p class="tech-description">
+                            集成Coze AI智能客服SDK，提供AI助手对话功能，解答用户疑问
+                        </p>
+                        <ul class="tech-features">
+                            <li>WebChatClient对话框组件</li>
+                            <li>Token认证机制</li>
+                            <li>文件上传支持</li>
+                            <li>自定义宽度和标题</li>
+                            <li>浮动 widget 样式</li>
+                            <li>消息历史持久化</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// Coze AI客服初始化</span>
+<span class="code-keyword">new</span> CozeWebSDK.WebChatClient({
+    <span class="code-keyword">config</span>: {
+        <span class="code-keyword">bot_id</span>: <span class="code-string">'7643809000467333139'</span>
+    },
+    <span class="code-keyword">auth</span>: {
+        <span class="code-keyword">type</span>: <span class="code-string">'token'</span>,
+        <span class="code-keyword">token</span>: <span class="code-string">'pat_xxx'</span>
+    },
+    <span class="code-keyword">componentProps</span>: {
+        <span class="code-keyword">title</span>: <span class="code-string">'AI智能助手'</span>,
+        <span class="code-keyword">width</span>: <span class="code-string">400</span>
+    }
+});
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== 数据存储 ==================== -->
+            <section id="storage" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">💾</span>
+                    数据存储方案
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- LocalStorage -->
+                    <div class="tech-card">
+                        <h3>localStorage 本地存储</h3>
+                        <p class="tech-description">
+                            使用浏览器localStorage API实现客户端数据持久化，保存用户偏好、飞行记录等数据
+                        </p>
+                        <ul class="tech-features">
+                            <li>setItem保存键值对数据</li>
+                            <li>getItem读取存储数据</li>
+                            <li>removeItem删除指定数据</li>
+                            <li>clear清空所有数据</li>
+                            <li>JSON.stringify对象序列化</li>
+                            <li>JSON.parse数据反序列化</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 保存用户信息</span>
+<span class="code-keyword">const</span> profile = {
+    <span class="code-keyword">name</span>: <span class="code-string">'张三'</span>,
+    <span class="code-keyword">email</span>: <span class="code-string">'zhang@example.com'</span>
+};
+
+localStorage.<span class="code-keyword">setItem</span>(
+    <span class="code-string">'userProfile'</span>, 
+    JSON.stringify(profile)
+);
+
+<span class="code-comment">// 读取用户信息</span>
+<span class="code-keyword">const</span> saved = JSON.parse(
+    localStorage.<span class="code-keyword">getItem</span>(<span class="code-string">'userProfile'</span>)
+);
+                        </div>
+                    </div>
+
+                    <!-- 数据存储应用场景 -->
+                    <div class="tech-card">
+                        <h3>Storage 应用场景</h3>
+                        <p class="tech-description">
+                            项目中localStorage的具体应用场景和数据结构设计
+                        </p>
+                        <ul class="tech-features">
+                            <li>无人机实时状态（droneStatus</li>
+                            <li>已连接设备信息（connectedDevice</li>
+                            <li>用户个人资料（userProfile</li>
+                            <li>任务管理数据（droneTasks</li>
+                            <li>安全检查清单（safety-check-</li>
+                            <li>用户登录状态（isLoggedIn</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// 数据结构示例</span>
+{
+    <span class="code-keyword">"droneStatus"</span>: {
+        <span class="code-keyword">"altitude"</span>: <span class="code-string">120.5</span>,
+        <span class="code-keyword">"speed"</span>: <span class="code-string">35.2</span>,
+        <span class="code-keyword">"battery"</span>: <span class="code-string">87</span>,
+        <span class="code-keyword">"timestamp"</span>: <span class="code-string">1234567890</span>
+    }
+}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== 动画效果 ==================== -->
+            <section id="animation" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">�</span>
+                    动画与特效
+                </h2>
+                
+                <div class="tech-grid">
+                    <!-- CSS动画 -->
+                    <div class="tech-card">
+                        <h3>CSS Keyframe Animations</h3>
+                        <p class="tech-description">
+                            使用CSS关键帧动画实现页面加载、元素出现、状态变化等动画效果
+                        </p>
+                        <ul class="tech-features">
+                            <li>fadeInUp淡入向上动画</li>
+                            <li>slideInRight右侧滑入</li>
+                            <li>pulse脉冲跳动效果</li>
+                            <li>rotate旋转动画</li>
+                            <li>scale缩放效果</li>
+                            <li>animation-fill-mode填充模式</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 脉冲动画效果 */</span>
+@<span class="code-keyword">keyframes</span> pulse {
+    <span class="code-keyword">0%, 100%</span> {
+        <span class="code-keyword">opacity</span>: <span class="code-string">1</span>;
+    }
+    <span class="code-keyword">50%</span> {
+        <span class="code-keyword">opacity</span>: <span class="code-string">0.5</span>;
+    }
+}
+
+.<span class="code-keyword">animate-pulse</span> {
+    <span class="code-keyword">animation</span>: <span class="code-string">pulse 2s infinite</span>;
+}
+                        </div>
+                    </div>
+
+                    <!-- CSS过渡 -->
+                    <div class="tech-card">
+                        <h3>CSS Transitions</h3>
+                        <p class="tech-description">
+                            使用CSS过渡实现平滑的状态变化，提升用户交互体验
+                        </p>
+                        <ul class="tech-features">
+                            <li>hover悬停过渡效果</li>
+                            <li>transform变换过渡</li>
+                            <li>opacity透明度渐变</li>
+                            <li>color颜色平滑变化</li>
+                            <li>cubic-bezier自定义曲线</li>
+                            <li>transition-delay延迟触发</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">/* 卡片悬停效果 */</span>
+.<span class="code-keyword">card</span> {
+    <span class="code-keyword">transition</span>: <span class="code-string">all 0.3s ease</span>;
+}
+
+.<span class="code-keyword">card</span>:hover {
+    <span class="code-keyword">transform</span>: <span class="code-string">translateY(-5px)</span>;
+    <span class="code-keyword">box-shadow</span>: <span class="code-string">0 10px 25px 
+        rgba(0,0,0,0.15)</span>;
+}
+                        </div>
+                    </div>
+
+                    <!-- Canvas粒子系统 -->
+                    <div class="tech-card">
+                        <h3>Canvas Particle System</h3>
+                        <p class="tech-description">
+                            使用HTML5 Canvas API创建粒子系统，实现动态背景和视觉效果
+                        </p>
+                        <ul class="tech-features">
+                            <li>requestAnimationFrame动画循环</li>
+                            <li>粒子随机运动轨迹</li>
+                            <li>粒子连线效果</li>
+                            <li>鼠标交互响应</li>
+                            <li>颜色和大小渐变</li>
+                            <li>性能优化（离屏渲染）</li>
+                        </ul>
+                        <div class="code-example">
+<span class="code-comment">// Canvas粒子动画</span>
+<span class="code-keyword">function</span> <span class="code-keyword">animate</span>() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animate);
+}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== 系统架构 ==================== -->
+            <section id="architecture" class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🏗</span>
+                    系统架构设计
+                </h2>
+
+                <!-- 架构?-->
+                <div class="architecture-diagram">
+                    <h3 style="margin-bottom: 30px; color: #333;">三层架构设计</h3>
+                    <div class="diagram-layers">
+                        <div class="layer layer-presentation">
+                            📱 表现层 (Presentation Layer)
+                            <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.9;">
+                                HTML5 + CSS3 + JavaScript | 用户界面 | 交互逻辑
+                            </div>
+                        </div>
+                        <div class="layer-arrow">?/div>
+                        <div class="layer layer-business">
+                            ⚙️ 业务逻辑?(Business Logic Layer)
+                            <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.9;">
+                                数据处理 | 状态管?| 业务规则 | API调用
+                            </div>
+                        </div>
+                        <div class="layer-arrow"></div>
+                        <div class="layer layer-data">
+                            💾 数据�?(Data Layer)
+                            <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.9;">
+                                localStorage | 第三方API | 数据持久
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 技术依赖清�?-->
+                <div class="api-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">📦 技术依赖清</h3>
+                    <div class="dependency-list">
+                        <div class="dependency-item">
+                            <div class="dependency-name">HTML5</div>
+                            <div class="dependency-version">标准规范</div>
+                            <div class="dependency-purpose">页面结构和语义化</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">CSS3</div>
+                            <div class="dependency-version">现代特性</div>
+                            <div class="dependency-purpose">样式设计和布局</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">JavaScript ES6+</div>
+                            <div class="dependency-version">ECMAScript 2015+</div>
+                            <div class="dependency-purpose">业务逻辑和交互</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Tailwind CSS</div>
+                            <div class="dependency-version">CDN版本</div>
+                            <div class="dependency-purpose">实用优先CSS框架</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">百度地图 API</div>
+                            <div class="dependency-version">v3.0</div>
+                            <div class="dependency-purpose">地图服务和定位</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Chart.js</div>
+                            <div class="dependency-version">Latest</div>
+                            <div class="dependency-purpose">数据可视化图表</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Apache ECharts</div>
+                            <div class="dependency-version">5.x</div>
+                            <div class="dependency-purpose">高性能图表渲染</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Coze AI SDK</div>
+                            <div class="dependency-version">1.2.0-beta.19</div>
+                            <div class="dependency-purpose">AI智能客服对话</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Browser APIs</div>
+                            <div class="dependency-version">原生支持</div>
+                            <div class="dependency-purpose">localStorage, Fetch API</div>
+                        </div>
+                        <div class="dependency-item">
+                            <div class="dependency-name">Canvas API</div>
+                            <div class="dependency-version">HTML5标准</div>
+                            <div class="dependency-purpose">2D图形和动画</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API使用文档 -->
+                <div class="api-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">📚 核心API使用说明</h3>
+                    
+                    <div class="api-item">
+                        <div class="api-name">localStorage.setItem(key, value)</div>
+                        <div class="api-desc">保存数据到本地存储</div>
+                        <div class="api-params">
+                            <div class="param-item">
+                                <span class="param-name">key</span> 
+                                <span class="param-type">{String}</span> 
+                                - 存储键名
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">value</span> 
+                                <span class="param-type">{String}</span> 
+                                - 存储的值（需用JSON.stringify序列化对象）
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-item">
+                        <div class="api-name">localStorage.getItem(key)</div>
+                        <div class="api-desc">从本地存储读取数据</div>
+                        <div class="api-params">
+                            <div class="param-item">
+                                <span class="param-name">key</span> 
+                                <span class="param-type">{String}</span> 
+                                - 要读取的键名
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">返回</span> 
+                                <span class="param-type">{String|null}</span> 
+                                - 存储的值，不存在返回null
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-item">
+                        <div class="api-name">BMap.Map(container)</div>
+                        <div class="api-desc">创建百度地图实例</div>
+                        <div class="api-params">
+                            <div class="param-item">
+                                <span class="param-name">container</span> 
+                                <span class="param-type">{String|HTMLElement}</span> 
+                                - 地图容器ID或DOM元素
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-item">
+                        <div class="api-name">Chart(ctx, config)</div>
+                        <div class="api-desc">创建Chart.js图表实例</div>
+                        <div class="api-params">
+                            <div class="param-item">
+                                <span class="param-name">ctx</span> 
+                                <span class="param-type">{CanvasRenderingContext2D}</span> 
+                                - Canvas上下
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">config</span> 
+                                <span class="param-type">{Object}</span> 
+                                - 图表配置对象
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== 开发规范 ==================== -->
+            <section class="tech-section">
+                <h2 class="section-title">
+                    <span class="section-icon">📝</span>
+                    开发规范与最佳实践
+                </h2>
+                
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <h3>代码组织规范</h3>
+                        <ul class="tech-features">
+                            <li>HTML/CSS/JS分离原则</li>
+                            <li>模块化文件组织结构</li>
+                            <li>统一的命名规范（驼峰/短横线）</li>
+                            <li>注释清晰完整</li>
+                            <li>代码缩进和格式化统一</li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>性能优化建议</h3>
+                        <ul class="tech-features">
+                            <li>使用CDN加速资源加载</li>
+                            <li>图片懒加载和压缩</li>
+                            <li>CSS动画使用transform和opacity</li>
+                            <li>事件处理使用防抖和节流</li>
+                            <li>避免频繁的DOM操作</li>
+                            <li>合理使用localStorage缓存</li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>兼容性处理</h3>
+                        <ul class="tech-features">
+                            <li>主流浏览器兼容测试</li>
+                            <li>使用CSS前缀保证兼容性</li>
+                            <li>渐进增强和优雅降级</li>
+                            <li>移动端触摸事件适配</li>
+                            <li>响应式断点合理设置</li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>安全注意事项</h3>
+                        <ul class="tech-features">
+                            <li>避免XSS攻击（innerHTML慎用）</li>
+                            <li>敏感数据不存储在localStorage</li>
+                            <li>API密钥妥善保管</li>
+                            <li>输入验证和过滤</li>
+                            <li>HTTPS协议传输</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>DroneControl - 专业的无人机控制与管理平台</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="客服.html">帮助中心</a></li>
+                        <li><a href="技术支持.html">技术支持</a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                        <li><a href="服务条款.html">服务条款</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>📧 support@dronecontrol.com</p>
+                    <p>📞 400-888-9999</p>
+                    <p><a href="客服.html" style="color: #667eea; text-decoration: none;">💬 在线客服</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+    <script src="js/技术支持.js"></script>
+    </body>
+</html>
+

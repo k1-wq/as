@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全飞行规范 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .safety-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .safety-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .regulations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .regulation-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .regulation-card.danger {
+            border-left-color: #dc3545;
+        }
+        
+        .regulation-card.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .regulation-card.success {
+            border-left-color: #28a745;
+        }
+        
+        .checklist-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .emergency-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航�?-->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="showLoginModal()">登录</button>
+                <button class="btn-register" onclick="showRegisterModal()">注册</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜�?-->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="客服.html">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">客服中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="safety-container">
+            <div class="safety-header">
+                <h1>安全飞行规范</h1>
+                <p>了解并遵守最新的飞行安全规定，确保每次飞行都安全可靠</p>
+            </div>
+
+            <div class="regulations-grid">
+                <div class="regulation-card danger">
+                    <h3>🚫 禁飞区域</h3>
+                    <ul>
+                        <li>机场及周围1公里范围内</li>
+                        <li>军事管理区和政府机关</li>
+                        <li>人口密集的城市中心区</li>
+                        <li>高压电线和变电站附近</li>
+                        <li>自然保护区核心区</li>
+                    </ul>
+                </div>
+
+                <div class="regulation-card warning">
+                    <h3>⚠️ 限制条件</h3>
+                    <ul>
+                        <li>最大飞行高度不超过120米</li>
+                        <li>视距内飞行，保持目视接触</li>
+                        <li>远离人群至少30米距离</li>
+                        <li>避免在恶劣天气条件下飞行</li>
+                        <li>夜间飞行需特殊许可</li>
+                    </ul>
+                </div>
+
+                <div class="regulation-card success">
+                    <h3>必需准备</h3>
+                    <ul>
+                        <li>有效的无人机驾驶执照</li>
+                        <li>设备保险和责任险</li>
+                        <li>飞行计划报备审批</li>
+                        <li>应急联系方式</li>
+                        <li>备用电池和配件</li>
+                    </ul>
+                </div>
+
+                <div class="regulation-card">
+                    <h3>📋 飞行前检查</h3>
+                    <ul>
+                        <li>检查无人机外观完整性</li>
+                        <li>确认螺旋桨安装牢固</li>
+                        <li>测试遥控器和图传信号</li>
+                        <li>校准指南针和IMU</li>
+                        <li>检查电池电量和状态</li>
+                    </ul>
+                </div>
+
+                <div class="regulation-card">
+                    <h3>🌦️ 天气要求</h3>
+                    <ul>
+                        <li>风速不超过10米/秒</li>
+                        <li>能见度大于1公里</li>
+                        <li>无雷雨、大雾等恶劣天气</li>
+                        <li>温度在10°C到30°C之间</li>
+                        <li>湿度不超过80%</li>
+                    </ul>
+                </div>
+
+                <div class="regulation-card">
+                    <h3>👥 人员要求</h3>
+                    <ul>
+                        <li>操作员必须持有有效证件</li>
+                        <li>观察员协助监控周围环境</li>
+                        <li>未成年人不得单独操作</li>
+                        <li>酒后禁止操作无人机</li>
+                        <li>身体不适时避免飞行</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="checklist-section">
+                <h2>飞行安全检查清单</h2>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item1">
+                        <label for="item1">检查无人机外观是否有损坏</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item2">
+                        <label for="item2">确认所有螺旋桨安装正确且牢固</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item3">
+                        <label for="item3">测试遥控器功能和信号强度</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item4">
+                        <label for="item4">校准指南针和惯性测量单元</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item5">
+                        <label for="item5">检查电池电量充足且状态良好</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item6">
+                        <label for="item6">确认GPS信号强且稳定</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item7">
+                        <label for="item7">检查摄像头和云台工作正常</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checkbox" id="item8">
+                        <label for="item8">确认飞行区域无障碍物</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="emergency-section">
+                <h2>🆘 紧急情况处理</h2>
+                <div class="emergency-tips">
+                    <h4>失联处理</h4>
+                    <p>立即启动返航程序，保持冷静等待无人机自动返回</p>
+                    
+                    <h4>低电量警告：</h4>
+                    <p>立即返航，不要尝试继续飞行任务</p>
+                    
+                    <h4>强风应对</h4>
+                    <p>降低高度，减小飞行速度，尽快返航</p>
+                    
+                    <h4>设备故障</h4>
+                    <p>切换到手动模式，寻找安全地点紧急降落</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>DroneControl - 专业的无人机控制与管理平台</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="客服.html">帮助中心</a></li>
+                        <li><a href="技术支.html">技术支?/a></li>
+                        <li><a href="隐私政策.html">隐私政策</a></li>
+                        <li><a href="服务条款.html">服务条款</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>📧 support@dronecontrol.com</p>
+                    <p>📞 400-888-9999</p>
+                    <p><a href="客服.html" style="color: #667eea; text-decoration: none;">💬 在线客服</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/登录script.js"></script>
+    <script src="安全飞行规范.js"></script>
+    </body>
+</html>
+

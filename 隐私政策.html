@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>隐私政策 · 无人机控制系统</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 基础变量与重置 */
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #f72585;
+      --info: #4895ef;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --radius: 12px;
+      --shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      --transition: all 0.25s ease;
+      --sidebar-width: 260px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: #f4f6fb;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* 顶部导航 */
+    .top-nav {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 0.75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+      backdrop-filter: blur(8px);
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .logo-icon {
+      color: var(--secondary);
+    }
+    .btn {
+      padding: 0.5rem 1.25rem;
+      border: none;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 10px rgba(67,97,238,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(67,97,238,0.35);
+    }
+
+    /* 主布局：侧边栏 + 内容 */
+    .main-layout {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      width: 100%;
+      padding: 0 1.5rem;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* 左侧固定边栏 (目录) */
+    .sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 90px;
+      align-self: flex-start;
+      max-height: calc(100vh - 110px);
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0 0.75rem 1rem;
+      border-bottom: 1px solid #eef0f5;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .sidebar-nav {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 0.25rem;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: #cbd5e0;
+      border-radius: 10px;
+    }
+    .sidebar-item {
+      margin-bottom: 0.2rem;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 10px;
+      color: #2d3748;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+    }
+    .sidebar-link .toc-number {
+      background: #edf2f7;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #4a5568;
+      transition: var(--transition);
+    }
+    .sidebar-link:hover {
+      background: #f0f4ff;
+      color: var(--primary);
+      border-color: #d9e2ff;
+    }
+    .sidebar-link.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 6px 14px rgba(67,97,238,0.3);
+      border-color: transparent;
+    }
+    .sidebar-link.active .toc-number {
+      background: rgba(255,255,255,0.25);
+      color: white;
+    }
+
+    /* 主内容区域 */
+    .content-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #4361ee, #7209b7);
+      color: white;
+      padding: 2rem 2rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .page-subtitle {
+      opacity: 0.9;
+      margin-top: 0.4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .page-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+
+    .privacy-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+    }
+
+    .privacy-section {
+      margin-bottom: 2.8rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #edf2f7;
+      scroll-margin-top: 100px;
+    }
+    .privacy-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-number {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .subsection-title {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin: 1.5rem 0 0.8rem;
+      padding-left: 1rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    .info-box, .warning-box, .tip-box, .important-box {
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      background: #f8faff;
+      border-left: 5px solid var(--info);
+    }
+    .warning-box { background: #fff9f0; border-left-color: var(--warning); }
+    .tip-box { background: #f0f7ff; border-left-color: var(--primary); }
+    .important-box { background: #fff0f5; border-left-color: var(--danger); }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .data-table th {
+      background: #f0f3ff;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .data-table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #edf2f7;
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.2rem;
+    }
+    .contact-item {
+      display: flex;
+      gap: 0.8rem;
+    }
+    .contact-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .footer {
+      background: #1a202c;
+      color: #cbd5e0;
+      padding: 2rem 1.5rem;
+      margin-top: 2rem;
+    }
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-layout {
+        flex-direction: column;
+        padding: 0 1rem;
+      }
+      .sidebar {
+        position: static;
+        width: 100%;
+        max-height: none;
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <!-- 顶部导航 -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <a href="首页.html" class="logo">
+        <i class="fas fa-drone logo-icon"></i> <span>无人机控制系统</span>
+      </a>
+      <div>
+        <a href="首页.html" class="btn btn-primary"><i class="fas fa-home"></i> 返回首页</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主布局：左侧固定目录 + 右侧内容 -->
+  <div class="main-layout">
+    <!-- 左侧边栏固定目录 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-list-ul"></i> <span>政策目录</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-item"><a href="#introduction" class="sidebar-link active"><span class="toc-number">1</span>引言</a></li>
+        <li class="sidebar-item"><a href="#collection" class="sidebar-link"><span class="toc-number">2</span>信息收集</a></li>
+        <li class="sidebar-item"><a href="#usage" class="sidebar-link"><span class="toc-number">3</span>信息使用</a></li>
+        <li class="sidebar-item"><a href="#storage" class="sidebar-link"><span class="toc-number">4</span>数据存储与保护</a></li>
+        <li class="sidebar-item"><a href="#sharing" class="sidebar-link"><span class="toc-number">5</span>信息共享</a></li>
+        <li class="sidebar-item"><a href="#rights" class="sidebar-link"><span class="toc-number">6</span>您的权利</a></li>
+        <li class="sidebar-item"><a href="#cookies" class="sidebar-link"><span class="toc-number">7</span>Cookie与追踪</a></li>
+        <li class="sidebar-item"><a href="#children" class="sidebar-link"><span class="toc-number">8</span>儿童隐私</a></li>
+        <li class="sidebar-item"><a href="#updates" class="sidebar-link"><span class="toc-number">9</span>政策更新</a></li>
+        <li class="sidebar-item"><a href="#contact" class="sidebar-link"><span class="toc-number">10</span>联系我们</a></li>
+        <li class="sidebar-item"><a href="#legal" class="sidebar-link"><span class="toc-number">11</span>法律依据</a></li>
+      </ul>
+    </aside>
+
+    <!-- 右侧主要内容 -->
+    <main class="content-area">
+      <div class="page-header">
+        <h1><i class="fas fa-shield-alt"></i> 隐私政策</h1>
+        <p class="page-subtitle">了解我们如何收集、使用和保护您的个人信息</p>
+        <div class="page-meta">
+          <span><i class="far fa-calendar-alt"></i> 更新于 2026年1月6日</span>
+          <span><i class="far fa-clock"></i> 阅读约15分钟</span>
+        </div>
+      </div>
+
+      <div class="privacy-card">
+        <!-- 各章节内容保持不变，只调整结构以适应侧边栏 -->
+        <section id="introduction" class="privacy-section">
+          <div class="section-header"><div class="section-number">1</div><h2 class="section-title">引言</h2></div>
+          <p>欢迎使用无人机控制系统。我们深知个人信息对您的重要性，并会尽全力保护您的个人信息安全。</p>
+          <div class="important-box"><strong>⚠️ 重要提示：</strong>请仔细阅读本政策。继续使用即表示同意本政策全部内容。</div>
+          <p>本隐私政策将帮助您了解：我们如何收集和使用您的个人信息；如何使用Cookie；如何共享、转让、公开披露；如何保护您的信息；您的权利；儿童隐私保护；本政策如何更新等。</p>
+        </section>
+
+        <section id="collection" class="privacy-section">
+          <div class="section-header"><div class="section-number">2</div><h2 class="section-title">信息收集</h2></div>
+          <div class="subsection-title">2.1 账户注册信息</div>
+          <p>用户名、密码、姓名、手机号、邮箱、地址、头像等。</p>
+          <div class="subsection-title">2.2 设备连接信息</div>
+          <p>设备序列号、型号、蓝牙地址、连接状态等。</p>
+          <div class="subsection-title">2.3 飞行数据</div>
+          <p>GPS坐标、高度、速度、电池、飞行轨迹等。</p>
+          <div class="subsection-title">2.4 任务与安全信息</div>
+          <p>任务名称、状态、安全检查记录、警告信息。</p>
+        </section>
+
+        <section id="usage" class="privacy-section">
+          <div class="section-header"><div class="section-number">3</div><h2 class="section-title">信息使用</h2></div>
+          <table class="data-table">
+            <thead><tr><th>目的</th><th>具体用途</th></tr></thead>
+            <tbody>
+              <tr><td>核心服务</td><td>无人机连接、控制、数据分析</td></tr>
+              <tr><td>账户管理</td><td>身份验证、设置同步</td></tr>
+              <tr><td>飞行安全</td><td>实时警告、异常检测</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="storage" class="privacy-section">
+          <div class="section-header"><div class="section-number">4</div><h2 class="section-title">数据存储与保护</h2></div>
+          <p>大部分数据存储在浏览器本地存储中。部分依赖百度地图API、Coze AI等第三方服务。我们采用HTTPS加密、密码加密存储、访问控制等措施保护数据。</p>
+          <div class="tip-box">💡 建议使用强密码并定期清理浏览器缓存。</div>
+        </section>
+
+        <section id="sharing" class="privacy-section">
+          <div class="section-header"><div class="section-number">5</div><h2 class="section-title">信息共享</h2></div>
+          <p>我们不会出售您的个人信息。仅在经您同意、法律要求或与服务提供商（如百度地图、Coze AI）必要时共享最少信息。</p>
+        </section>
+
+        <section id="rights" class="privacy-section">
+          <div class="section-header"><div class="section-number">6</div><h2 class="section-title">您的权利</h2></div>
+          <p>您可以访问、更正、删除个人信息，撤回同意或注销账户。我们将在15个工作日内响应请求。</p>
+        </section>
+
+        <section id="cookies" class="privacy-section">
+          <div class="section-header"><div class="section-number">7</div><h2 class="section-title">Cookie与追踪技术</h2></div>
+          <p>我们使用必要Cookie和本地存储来维持服务运行。您可通过浏览器设置管理Cookie。</p>
+        </section>
+
+        <section id="children" class="privacy-section">
+          <div class="section-header"><div class="section-number">8</div><h2 class="section-title">儿童隐私保护</h2></div>
+          <p>本服务主要面向成年人。如果我们发现无意中收集了儿童信息，将立即删除。</p>
+        </section>
+
+        <section id="updates" class="privacy-section">
+          <div class="section-header"><div class="section-number">9</div><h2 class="section-title">政策更新</h2></div>
+          <p>我们可能会更新本政策，并通过网站公告或邮件通知重大变更。</p>
+        </section>
+
+        <section id="contact" class="privacy-section">
+          <div class="section-header"><div class="section-number">10</div><h2 class="section-title">联系我们</h2></div>
+          <div class="contact-grid">
+            <div class="contact-item"><div class="contact-icon"><i class="fas fa-envelope"></i></div><div><strong>邮件</strong><br>privacy@dronecontrol.com</div></div>
+            <div class="contact-item"><div class="contact-icon"><i class="fas fa-phone"></i></div><div><strong>电话</strong><br>400-888-9999</div></div>
+          </div>
+        </section>
+
+        <section id="legal" class="privacy-section">
+          <div class="section-header"><div class="section-number">11</div><h2 class="section-title">法律依据</h2></div>
+          <p>本政策依据《个人信息保护法》《网络安全法》等制定。</p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div>© 2024 无人机控制系统 · 保留所有权利</div>
+      <div>support@dronecontrol.com</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function() {
+    // 左侧边栏固定目录交互
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const sections = document.querySelectorAll('.privacy-section');
+
+    // 点击平滑滚动并更新激活状态
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        if (target) {
+          const offset = 80; // 顶部导航高度余量
+          const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // 滚动监听更新激活目录项
+    function updateActiveLink() {
+      let currentId = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentId = section.getAttribute('id');
+        }
+      });
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveLink);
+    window.addEventListener('load', updateActiveLink);
+  })();
+</script>
+</body>
+</html>

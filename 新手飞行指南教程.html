@@ -1,0 +1,2169 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新手飞行教程 - 无人机控制系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础变量和重置 */
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #7209b7;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --info-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 容器布局 */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            background: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: var(--secondary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        /* 主导航栏 */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-item {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            text-decoration: none;
+            color: var(--gray-color);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 页面标题区域 */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 快速导航 */
+        .quick-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-nav-btn {
+            padding: 0.75rem 1.25rem;
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--dark-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .quick-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-nav-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        /* 学习路径概览 */
+        .learning-path {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .path-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .path-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .path-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .path-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 教程卡片网格 */
+        .tutorials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tutorial-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-color);
+        }
+
+        .tutorial-card.completed {
+            border-color: var(--success-color);
+        }
+
+        .tutorial-card.in-progress {
+            border-color: var(--info-color);
+        }
+
+        .tutorial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tutorial-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tutorial-card.completed::before {
+            background: linear-gradient(90deg, var(--success-color), #00d4aa);
+            transform: scaleX(1);
+        }
+
+        .tutorial-card.in-progress::before {
+            background: linear-gradient(90deg, var(--info-color), #2a8bf2);
+            transform: scaleX(1);
+            animation: progressPulse 2s infinite;
+        }
+
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card-icon.basics {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .card-icon.controller {
+            background: linear-gradient(135deg, var(--info-color), #2a8bf2);
+        }
+
+        .card-icon.preparation {
+            background: linear-gradient(135deg, var(--success-color), #00d4aa);
+        }
+
+        .card-icon.takeoff {
+            background: linear-gradient(135deg, var(--warning-color), #ff9e00);
+        }
+
+        .card-icon.flight {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .card-icon.photo {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-duration {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .card-description {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-progress {
+            margin-bottom: 1rem;
+        }
+
+        .card-progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .card-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .card-progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .tutorial-card.completed .card-progress-fill {
+            background: var(--success-color);
+        }
+
+        .tutorial-card.in-progress .card-progress-fill {
+            background: var(--info-color);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .card-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-card {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+
+        .btn-start {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-resume {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-resume:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        .btn-review {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-review:hover {
+            background: #3db8d9;
+            transform: translateY(-2px);
+        }
+
+        /* 学习建议 */
+        .learning-tips {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 3rem;
+        }
+
+        .tips-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tips-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .tip-item {
+            background: #f8f9fa;
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .tip-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-text {
+            color: var(--dark-color);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* 学习模态框 */
+        .learning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .learning-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            max-width: 1000px;
+            width: 95%;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-close {
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* 课程内容样式 */
+        .lesson-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .lesson-section {
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .lesson-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-content {
+            line-height: 1.8;
+            color: var(--dark-color);
+        }
+
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box {
+            background: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            background: rgba(248, 150, 30, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .tip-box {
+            background: rgba(72, 149, 239, 0.1);
+            border-left: 4px solid var(--info-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 宽高比 */
+            margin: 1.5rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .video-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .video-placeholder p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .quiz-container {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-color);
+            background: rgba(76, 201, 240, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger-color);
+            background: rgba(247, 37, 133, 0.1);
+        }
+
+        .quiz-feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .lesson-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .lesson-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-lesson {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-prev {
+            background: #f0f0f0;
+            color: var(--dark-color);
+        }
+
+        .btn-prev:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-next {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-complete {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #3db8d9;
+            transform: translateY(-2px);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                padding: 0 1rem;
+                overflow-x: auto;
+            }
+            
+            .nav-item {
+                flex: 0 0 auto;
+            }
+            
+            .tutorials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 98%;
+                max-height: 98vh;
+            }
+            
+            .modal-header {
+                padding: 1rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .modal-footer {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .lesson-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .btn-lesson {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .path-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .path-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .card-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .card-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* 完成徽章 */
+        .completion-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(76, 201, 240, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--gray-color);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="top-nav">
+            <div class="nav-container">
+                <a href="首页.html" class="logo">
+                    <i class="fas fa-drone logo-icon"></i>
+                    <span>无人机控制系统</span>
+                </a>
+                <div class="user-actions">
+                    <a href="首页.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        返回首页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主导航栏 -->
+        <nav class="main-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html" class="nav-link">
+                        <i class="fas fa-gamepad nav-icon"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html" class="nav-link">
+                        <i class="fas fa-tasks nav-icon"></i>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="新手教程.html" class="nav-link">
+                        <i class="fas fa-graduation-cap nav-icon"></i>
+                        <span class="nav-text">新手教程</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-graduation-cap"></i> 新手飞行教程
+                </h1>
+                <p class="page-subtitle">从零开始学习无人机操控技术，逐步掌握飞行技能</p>
+            </div>
+
+            <!-- 快速导航 -->
+            <div class="quick-nav">
+                <a href="首页.html" class="quick-nav-btn">
+                    <i class="fas fa-home"></i> 首页
+                </a>
+                <a href="控制台.html" class="quick-nav-btn">
+                    <i class="fas fa-gamepad"></i> 控制台
+                </a>
+                <a href="任务管理.html" class="quick-nav-btn">
+                    <i class="fas fa-tasks"></i> 任务管理
+                </a>
+                <a href="数据分析.html" class="quick-nav-btn">
+                    <i class="fas fa-chart-bar"></i> 数据分析
+                </a>
+                <span class="quick-nav-btn active">
+                    <i class="fas fa-graduation-cap"></i> 新手教程
+                </span>
+            </div>
+
+            <!-- 学习路径概览 -->
+            <div class="learning-path">
+                <div class="path-header">
+                    <h2 class="path-title">
+                        <i class="fas fa-road"></i> 新手学习路径
+                    </h2>
+                    <div class="path-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="completedCount">0</div>
+                            <div class="stat-label">已完成</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="inProgressCount">0</div>
+                            <div class="stat-label">进行中</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalCount">6</div>
+                            <div class="stat-label">总课程</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="path-progress">
+                    <div class="progress-info">
+                        <span>整体学习进度</span>
+                        <span id="totalProgress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="totalProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教程卡片网格 -->
+            <div class="tutorials-grid">
+                <!-- 教程卡片将通过JavaScript动态生成 -->
+            </div>
+
+            <!-- 学习建议 -->
+            <div class="learning-tips">
+                <div class="tips-header">
+                    <i class="fas fa-lightbulb" style="color: var(--warning-color); font-size: 1.8rem;"></i>
+                    <h2 class="tips-title">学习建议</h2>
+                </div>
+                <div class="tips-grid">
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="tip-text">
+                            建议按顺序学习课程，每个课程约15-20分钟
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="tip-text">
+                            观看视频教程时，可以暂停并跟随练习
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="tip-text">
+                            完成每个课程后，记得标记为已完成
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-redo"></i>
+                        </div>
+                        <div class="tip-text">
+                            定期复习已学内容，巩固技能
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 学习模态框 -->
+        <div class="learning-modal" id="learningModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">
+                        <i class="fas fa-book"></i> 课程标题
+                    </h2>
+                    <button class="modal-close" id="modalCloseBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- 课程内容将通过JavaScript动态生成 -->
+                </div>
+                <div class="modal-footer">
+                    <div class="lesson-progress">
+                        <span class="progress-text" id="lessonProgressText">第1节/共5节</span>
+                    </div>
+                    <div class="lesson-actions">
+                        <button class="btn-lesson btn-prev" id="prevBtn">
+                            <i class="fas fa-arrow-left"></i> 上一节
+                        </button>
+                        <button class="btn-lesson btn-next" id="nextBtn">
+                            下一节 <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="btn-lesson btn-complete" id="completeBtn" style="display: none;">
+                            <i class="fas fa-check"></i> 完成课程
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>无人机控制系统 - 专业的无人机控制与管理平台</p>
+                    <p>提供全方位的新手学习解决方案</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="首页.html">首页</a></li>
+                        <li><a href="控制台.html">控制台</a></li>
+                        <li><a href="任务管理.html">任务管理</a></li>
+                        <li><a href="数据分析.html">数据分析</a></li>
+                        <li><a href="客服中心.html">客服中心</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p><i class="fas fa-envelope"></i> support@dronecontrol.com</p>
+                    <p><i class="fas fa-phone"></i> 400-888-9999</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 北京市朝阳区科技园</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 无人机控制系统. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 飞行教程系统
+        class FlightTutorialSystem {
+            constructor() {
+                this.tutorials = [];
+                this.currentLesson = null;
+                this.currentSection = 0;
+                this.userProgress = {};
+                this.init();
+            }
+
+            // 初始化
+            init() {
+                this.loadTutorials();
+                this.loadUserProgress();
+                this.bindEvents();
+                this.renderTutorials();
+                this.updateProgressStats();
+            }
+
+            // 加载教程数据
+            loadTutorials() {
+                this.tutorials = [
+                    {
+                        id: 'basics',
+                        title: '基础理论知识',
+                        description: '了解无人机的基本构造、工作原理和安全知识',
+                        duration: '15分钟',
+                        icon: 'fas fa-book',
+                        iconClass: 'basics',
+                        tags: ['理论', '安全', '基础'],
+                        sections: [
+                            {
+                                title: '无人机基本构造',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-cogs"></i> 无人机基本构造</h3>
+                                        <div class="section-content">
+                                            <p>无人机主要由以下几个部分组成：</p>
+                                            <ul>
+                                                <li><strong>机架</strong>：无人机的骨架结构</li>
+                                                <li><strong>电机</strong>：提供升力，通常为4个或6个</li>
+                                                <li><strong>螺旋桨</strong>：产生推力，分为正桨和反桨</li>
+                                                <li><strong>飞控系统</strong>：无人机的大脑，控制飞行姿态</li>
+                                                <li><strong>电池</strong>：提供电力，通常为锂电池</li>
+                                                <li><strong>摄像头/云台</strong>：用于拍摄和稳定画面</li>
+                                                <li><strong>遥控器</strong>：操作员控制无人机的设备</li>
+                                            </ul>
+                                            <div class="info-box">
+                                                <p><strong>重要提示：</strong> 在飞行前，务必检查所有部件是否安装牢固，特别是螺旋桨。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '工作原理',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-microchip"></i> 工作原理</h3>
+                                        <div class="section-content">
+                                            <p>无人机通过以下原理实现飞行：</p>
+                                            <ol>
+                                                <li><strong>升力产生</strong>：电机带动螺旋桨旋转，产生向下的气流，根据牛顿第三定律，产生向上的升力</li>
+                                                <li><strong>姿态控制</strong>：通过调整不同电机的转速，控制无人机的俯仰、横滚和偏航</li>
+                                                <li><strong>稳定系统</strong>：飞控系统通过陀螺仪、加速度计等传感器保持无人机稳定</li>
+                                                <li><strong>GPS定位</strong>：通过GPS模块实现精确定位和悬停</li>
+                                            </ol>
+                                            <div class="video-container">
+                                                <div class="video-placeholder">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <p>无人机工作原理演示视频</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '安全知识',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-shield-alt"></i> 安全知识</h3>
+                                        <div class="section-content">
+                                            <p>飞行安全是无人机操作的首要原则：</p>
+                                            <div class="warning-box">
+                                                <p><strong>飞行前检查清单：</strong></p>
+                                                <ul>
+                                                    <li>检查电池电量是否充足</li>
+                                                    <li>确认螺旋桨安装正确且牢固</li>
+                                                    <li>检查GPS信号强度</li>
+                                                    <li>确认飞行区域是否合法</li>
+                                                    <li>观察天气条件是否适合飞行</li>
+                                                </ul>
+                                            </div>
+                                            <div class="tip-box">
+                                                <p><strong>安全飞行距离：</strong></p>
+                                                <ul>
+                                                    <li>保持与人群、建筑物至少30米距离</li>
+                                                    <li>飞行高度不超过120米</li>
+                                                    <li>保持无人机在视线范围内</li>
+                                                    <li>避免在机场附近飞行</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '知识测试',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-question-circle"></i> 知识测试</h3>
+                                        <div class="section-content">
+                                            <div class="quiz-container">
+                                                <div class="quiz-question">
+                                                    1. 无人机起飞前最重要的安全检查是什么？
+                                                </div>
+                                                <div class="quiz-options">
+                                                    <div class="quiz-option" data-correct="true">
+                                                        <i class="far fa-circle"></i>
+                                                        检查螺旋桨是否安装牢固
+                                                    </div>
+                                                    <div class="quiz-option" data-correct="false">
+                                                        <i class="far fa-circle"></i>
+                                                        检查摄像头是否清洁
+                                                    </div>
+                                                    <div class="quiz-option" data-correct="false">
+                                                        <i class="far fa-circle"></i>
+                                                        检查遥控器外观
+                                                    </div>
+                                                    <div class="quiz-option" data-correct="false">
+                                                        <i class="far fa-circle"></i>
+                                                        检查无人机颜色
+                                                    </div>
+                                                </div>
+                                                <div class="quiz-feedback correct" id="quizFeedback">
+                                                    <p><i class="fas fa-check-circle"></i> 正确！螺旋桨安装牢固是飞行安全的关键。</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        id: 'controller',
+                        title: '遥控器操作',
+                        description: '熟悉遥控器各按键功能，掌握基本操作方法',
+                        duration: '20分钟',
+                        icon: 'fas fa-gamepad',
+                        iconClass: 'controller',
+                        tags: ['操作', '遥控', '基础'],
+                        sections: [
+                            {
+                                title: '遥控器布局',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-th-large"></i> 遥控器布局</h3>
+                                        <div class="section-content">
+                                            <p>标准无人机遥控器主要包含以下部分：</p>
+                                            <ul>
+                                                <li><strong>左摇杆</strong>：控制油门（上下）和偏航（左右）</li>
+                                                <li><strong>右摇杆</strong>：控制俯仰（上下）和横滚（左右）</li>
+                                                <li><strong>功能按键</strong>：起飞/降落、返航、拍照/录像等</li>
+                                                <li><strong>模式切换</strong>：P模式（GPS）、A模式（姿态）、S模式（运动）</li>
+                                                <li><strong>显示屏</strong>：显示电量、信号强度、飞行参数等</li>
+                                            </ul>
+                                            <div class="info-box">
+                                                <p><strong>操作要点：</strong> 新手建议从P模式（GPS模式）开始学习，此模式下无人机最稳定。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '基本操作练习',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-hands"></i> 基本操作练习</h3>
+                                        <div class="section-content">
+                                            <p>跟随以下步骤练习基本操作：</p>
+                                            <ol>
+                                                <li>缓慢推动左摇杆向上，感受油门响应</li>
+                                                <li>轻微移动右摇杆，观察无人机姿态变化</li>
+                                                <li>练习前后左右平移飞行</li>
+                                                <li>练习缓慢旋转（偏航）</li>
+                                                <li>练习悬停保持</li>
+                                            </ol>
+                                            <div class="video-container">
+                                                <div class="video-placeholder">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <p>遥控器操作演示视频</p>
+                                                </div>
+                                            </div>
+                                            <div class="tip-box">
+                                                <p><strong>练习建议：</strong> 在开阔的平地开始练习，保持低高度（1-2米），缓慢操作。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        id: 'preparation',
+                        title: '首次飞行准备',
+                        description: '飞行前检查清单，确保设备和环境安全',
+                        duration: '15分钟',
+                        icon: 'fas fa-clipboard-check',
+                        iconClass: 'preparation',
+                        tags: ['准备', '安全', '检查'],
+                        sections: [
+                            {
+                                title: '设备检查',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-tools"></i> 设备检查</h3>
+                                        <div class="section-content">
+                                            <p>飞行前必须完成以下设备检查：</p>
+                                            <div class="warning-box">
+                                                <p><strong>必须检查项目：</strong></p>
+                                                <ul>
+                                                    <li>电池电量 ≥ 80%</li>
+                                                    <li>螺旋桨无裂纹、安装牢固</li>
+                                                    <li>电机转动顺畅无阻碍</li>
+                                                    <li>摄像头镜头清洁</li>
+                                                    <li>SD卡已插入且有足够空间</li>
+                                                    <li>遥控器电量充足</li>
+                                                </ul>
+                                            </div>
+                                            <div class="tip-box">
+                                                <p><strong>建议检查项目：</strong></p>
+                                                <ul>
+                                                    <li>固件是否为最新版本</li>
+                                                    <li>云台保护罩已取下</li>
+                                                    <li>手机/平板设备已连接</li>
+                                                    <li>飞行记录已清空（如有需要）</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '环境评估',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-map-marked-alt"></i> 环境评估</h3>
+                                        <div class="section-content">
+                                            <p>选择合适的飞行环境至关重要：</p>
+                                            <ul>
+                                                <li><strong>开阔场地</strong>：至少50×50米的开阔区域</li>
+                                                <li><strong>远离人群</strong>：距离人群、建筑物至少30米</li>
+                                                <li><strong>天气条件</strong>：风速小于5级，无雨雪</li>
+                                                <li><strong>GPS信号</strong>：GPS卫星数 ≥ 10颗</li>
+                                                <li><strong>合法区域</strong>：不在禁飞区范围内</li>
+                                                <li><strong>光线充足</strong>：白天或良好照明条件下</li>
+                                            </ul>
+                                            <div class="info-box">
+                                                <p><strong>重要提示：</strong> 首次飞行建议在专业的飞行场地或有经验的飞手指导下进行。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        id: 'takeoff',
+                        title: '起飞与降落',
+                        description: '学习正确的起飞和降落技巧，确保飞行安全',
+                        duration: '25分钟',
+                        icon: 'fas fa-plane',
+                        iconClass: 'takeoff',
+                        tags: ['起飞', '降落', '安全'],
+                        sections: [
+                            {
+                                title: '标准起飞流程',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-rocket"></i> 标准起飞流程</h3>
+                                        <div class="section-content">
+                                            <p>遵循以下步骤进行安全起飞：</p>
+                                            <ol>
+                                                <li>将无人机放置在平坦开阔的地面</li>
+                                                <li>人员远离无人机至少5米</li>
+                                                <li>开启遥控器电源</li>
+                                                <li>开启无人机电源</li>
+                                                <li>等待GPS信号稳定（≥10颗卫星）</li>
+                                                <li>执行自动起飞或缓慢推动油门</li>
+                                                <li>上升至1-2米高度悬停观察</li>
+                                            </ol>
+                                            <div class="video-container">
+                                                <div class="video-placeholder">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <p>标准起飞流程演示视频</p>
+                                                </div>
+                                            </div>
+                                            <div class="warning-box">
+                                                <p><strong>注意事项：</strong></p>
+                                                <ul>
+                                                    <li>起飞时确保螺旋桨下方无杂物</li>
+                                                    <li>观察周围是否有鸟类或其他障碍物</li>
+                                                    <li>保持无人机在视线范围内</li>
+                                                    <li>首次起飞建议使用自动起飞功能</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '安全降落技巧',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-parachute-box"></i> 安全降落技巧</h3>
+                                        <div class="section-content">
+                                            <p>掌握正确的降落方法：</p>
+                                            <ol>
+                                                <li>选择平坦、开阔的降落区域</li>
+                                                <li>缓慢降低高度，保持稳定</li>
+                                                <li>在降落点上空1-2米处悬停</li>
+                                                <li>确认降落区域安全</li>
+                                                <li>缓慢降低油门直至触地</li>
+                                                <li>保持油门最低位置2-3秒</li>
+                                                <li>先关闭无人机电源，再关闭遥控器</li>
+                                            </ol>
+                                            <div class="tip-box">
+                                                <p><strong>紧急情况处理：</strong></p>
+                                                <ul>
+                                                    <li>电量过低时，立即执行自动返航</li>
+                                                    <li>信号丢失时，无人机会自动返航</li>
+                                                    <li>遇到强风时，逆风降落</li>
+                                                    <li>无法降落时，寻找替代降落点</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        id: 'flight',
+                        title: '基本飞行动作',
+                        description: '前后左右移动、旋转、悬停等基本飞行操作',
+                        duration: '30分钟',
+                        icon: 'fas fa-fighter-jet',
+                        iconClass: 'flight',
+                        tags: ['飞行', '操作', '练习'],
+                        sections: [
+                            {
+                                title: '基础移动控制',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-arrows-alt"></i> 基础移动控制</h3>
+                                        <div class="section-content">
+                                            <p>掌握无人机的基本移动操作：</p>
+                                            <ul>
+                                                <li><strong>前后飞行</strong>：推动右摇杆向前/向后</li>
+                                                <li><strong>左右平移</strong>：推动右摇杆向左/向右</li>
+                                                <li><strong>升降控制</strong>：推动左摇杆向上/向下</li>
+                                                <li><strong>旋转控制</strong>：推动左摇杆向左/向右</li>
+                                            </ul>
+                                            <div class="info-box">
+                                                <p><strong>操作技巧：</strong> 所有操作都应缓慢、平稳，避免急推急拉摇杆。</p>
+                                            </div>
+                                            <div class="video-container">
+                                                <div class="video-placeholder">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <p>基础飞行动作演示视频</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '悬停与稳定',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-pause-circle"></i> 悬停与稳定</h3>
+                                        <div class="section-content">
+                                            <p>悬停是无人机飞行的基础技能：</p>
+                                            <ol>
+                                                <li>将无人机升至2-3米高度</li>
+                                                <li>松开摇杆，让无人机自动悬停</li>
+                                                <li>观察无人机是否保持稳定</li>
+                                                <li>如有漂移，轻微修正</li>
+                                                <li>练习在不同高度悬停</li>
+                                                <li>练习在有风条件下的悬停</li>
+                                            </ol>
+                                            <div class="tip-box">
+                                                <p><strong>悬停练习：</strong></p>
+                                                <ul>
+                                                    <li>每天练习10分钟悬停</li>
+                                                    <li>尝试在不同环境下悬停</li>
+                                                    <li>记录每次悬停的稳定时间</li>
+                                                    <li>逐步减少修正次数</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        id: 'photo',
+                        title: '航拍基础',
+                        description: '相机参数设置、构图技巧和拍摄时机',
+                        duration: '35分钟',
+                        icon: 'fas fa-camera',
+                        iconClass: 'photo',
+                        tags: ['航拍', '摄影', '创意'],
+                        sections: [
+                            {
+                                title: '相机设置',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-sliders-h"></i> 相机设置</h3>
+                                        <div class="section-content">
+                                            <p>航拍前需要正确设置相机参数：</p>
+                                            <ul>
+                                                <li><strong>分辨率</strong>：4K/30fps 适合大多数场景</li>
+                                                <li><strong>照片格式</strong>：RAW+JPEG 保留后期处理空间</li>
+                                                <li><strong>白平衡</strong>：根据光线条件调整</li>
+                                                <li><strong>ISO</strong>：白天100-400，夜晚适当提高</li>
+                                                <li><strong>快门速度</strong>：遵循"180度规则"</li>
+                                                <li><strong>曝光补偿</strong>：根据场景亮度调整</li>
+                                            </ul>
+                                            <div class="info-box">
+                                                <p><strong>新手建议：</strong> 初期使用自动模式，熟悉后再尝试手动设置。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: '构图技巧',
+                                content: `
+                                    <div class="lesson-section">
+                                        <h3 class="section-title"><i class="fas fa-crop-alt"></i> 构图技巧</h3>
+                                        <div class="section-content">
+                                            <p>掌握基本的航拍构图原则：</p>
+                                            <ol>
+                                                <li><strong>三分法</strong>：将画面分为九宫格，主体放在交叉点</li>
+                                                <li><strong>引导线</strong>：利用道路、河流等引导观众视线</li>
+                                                <li><strong>对称构图</strong>：寻找对称的建筑或自然景观</li>
+                                                <li><strong>前景元素</strong>：添加前景增加画面层次感</li>
+                                                <li><strong>不同角度</strong>：尝试俯拍、平拍、仰拍</li>
+                                            </ol>
+                                            <div class="video-container">
+                                                <div class="video-placeholder">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <p>航拍构图技巧演示视频</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ]
+                    }
+                ];
+            }
+
+            // 加载用户进度
+            loadUserProgress() {
+                const savedProgress = localStorage.getItem('tutorialProgress');
+                if (savedProgress) {
+                    this.userProgress = JSON.parse(savedProgress);
+                } else {
+                    // 初始化进度
+                    this.tutorials.forEach(tutorial => {
+                        this.userProgress[tutorial.id] = {
+                            completed: false,
+                            progress: 0,
+                            lastAccessed: null
+                        };
+                    });
+                    this.saveUserProgress();
+                }
+            }
+
+            // 保存用户进度
+            saveUserProgress() {
+                localStorage.setItem('tutorialProgress', JSON.stringify(this.userProgress));
+            }
+
+            // 绑定事件
+            bindEvents() {
+                // 模态框关闭按钮
+                document.getElementById('modalCloseBtn').addEventListener('click', () => {
+                    this.closeLesson();
+                });
+
+                // 上一节按钮
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    this.prevSection();
+                });
+
+                // 下一节按钮
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    this.nextSection();
+                });
+
+                // 完成课程按钮
+                document.getElementById('completeBtn').addEventListener('click', () => {
+                    this.completeLesson();
+                });
+
+                // 点击模态框外部关闭
+                document.getElementById('learningModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('learningModal')) {
+                        this.closeLesson();
+                    }
+                });
+            }
+
+            // 渲染教程卡片
+            renderTutorials() {
+                const grid = document.querySelector('.tutorials-grid');
+                grid.innerHTML = this.tutorials.map(tutorial => this.createTutorialCard(tutorial)).join('');
+                
+                // 绑定卡片按钮事件
+                this.bindCardEvents();
+            }
+
+            // 创建教程卡片
+            createTutorialCard(tutorial) {
+                const progress = this.userProgress[tutorial.id];
+                const progressPercent = progress.progress;
+                const isCompleted = progress.completed;
+                const isInProgress = progressPercent > 0 && !isCompleted;
+                
+                let cardClass = 'tutorial-card';
+                if (isCompleted) cardClass += ' completed';
+                if (isInProgress) cardClass += ' in-progress';
+                
+                let buttonText = '开始学习';
+                let buttonClass = 'btn-start';
+                let buttonIcon = 'fas fa-play';
+                
+                if (isCompleted) {
+                    buttonText = '复习课程';
+                    buttonClass = 'btn-review';
+                    buttonIcon = 'fas fa-redo';
+                } else if (isInProgress) {
+                    buttonText = '继续学习';
+                    buttonClass = 'btn-resume';
+                    buttonIcon = 'fas fa-forward';
+                }
+
+                return `
+                    <div class="${cardClass}" data-id="${tutorial.id}">
+                        ${isCompleted ? '<div class="completion-badge"><i class="fas fa-check"></i></div>' : ''}
+                        <div class="card-header">
+                            <div class="card-icon ${tutorial.iconClass}">
+                                <i class="${tutorial.icon}"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">${tutorial.title}</h3>
+                                <div class="card-duration">
+                                    <i class="far fa-clock"></i>
+                                    ${tutorial.duration}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-description">
+                            ${tutorial.description}
+                        </div>
+                        <div class="card-progress">
+                            <div class="card-progress-info">
+                                <span>学习进度</span>
+                                <span>${progressPercent}%</span>
+                            </div>
+                            <div class="card-progress-bar">
+                                <div class="card-progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                ${tutorial.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-card ${buttonClass}" data-id="${tutorial.id}">
+                                    <i class="${buttonIcon}"></i> ${buttonText}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 绑定卡片事件
+            bindCardEvents() {
+                document.querySelectorAll('.btn-card').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const tutorialId = e.target.closest('button').dataset.id;
+                        this.openLesson(tutorialId);
+                    });
+                });
+            }
+
+            // 打开课程
+            openLesson(tutorialId) {
+                this.currentLesson = this.tutorials.find(t => t.id === tutorialId);
+                if (!this.currentLesson) return;
+
+                this.currentSection = 0;
+                this.updateLessonModal();
+                document.getElementById('learningModal').classList.add('active');
+                
+                // 更新访问时间
+                this.userProgress[tutorialId].lastAccessed = new Date().toISOString();
+                this.saveUserProgress();
+            }
+
+            // 更新课程模态框
+            updateLessonModal() {
+                if (!this.currentLesson) return;
+
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const completeBtn = document.getElementById('completeBtn');
+                const lessonProgressText = document.getElementById('lessonProgressText');
+
+                // 更新标题
+                modalTitle.innerHTML = `<i class="${this.currentLesson.icon}"></i> ${this.currentLesson.title}`;
+
+                // 更新内容
+                const section = this.currentLesson.sections[this.currentSection];
+                modalBody.innerHTML = section.content;
+
+                // 更新进度文本
+                lessonProgressText.textContent = `第${this.currentSection + 1}节/共${this.currentLesson.sections.length}节`;
+
+                // 更新按钮状态
+                prevBtn.style.display = this.currentSection > 0 ? 'flex' : 'none';
+                
+                if (this.currentSection < this.currentLesson.sections.length - 1) {
+                    nextBtn.style.display = 'flex';
+                    completeBtn.style.display = 'none';
+                } else {
+                    nextBtn.style.display = 'none';
+                    completeBtn.style.display = 'flex';
+                }
+
+                // 绑定测验事件
+                this.bindQuizEvents();
+            }
+
+            // 绑定测验事件
+            bindQuizEvents() {
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const isCorrect = e.target.closest('.quiz-option').dataset.correct === 'true';
+                        const feedback = document.getElementById('quizFeedback');
+                        
+                        // 移除所有选项的选中状态
+                        document.querySelectorAll('.quiz-option').forEach(opt => {
+                            opt.classList.remove('correct', 'incorrect');
+                        });
+                        
+                        // 标记正确/错误选项
+                        e.target.closest('.quiz-option').classList.add(isCorrect ? 'correct' : 'incorrect');
+                        
+                        // 显示反馈
+                        feedback.classList.remove('correct', 'incorrect');
+                        feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        feedback.style.display = 'block';
+                        
+                        // 更新反馈文本
+                        const feedbackText = isCorrect 
+                            ? '<p><i class="fas fa-check-circle"></i> 正确！回答得很好。</p>'
+                            : '<p><i class="fas fa-times-circle"></i> 不正确，请再思考一下。</p>';
+                        feedback.innerHTML = feedbackText;
+                    });
+                });
+            }
+
+            // 上一节
+            prevSection() {
+                if (this.currentSection > 0) {
+                    this.currentSection--;
+                    this.updateLessonModal();
+                }
+            }
+
+            // 下一节
+            nextSection() {
+                if (this.currentSection < this.currentLesson.sections.length - 1) {
+                    this.currentSection++;
+                    this.updateLessonModal();
+                }
+            }
+
+            // 完成课程
+            completeLesson() {
+                if (!this.currentLesson) return;
+
+                const tutorialId = this.currentLesson.id;
+                this.userProgress[tutorialId].completed = true;
+                this.userProgress[tutorialId].progress = 100;
+                this.userProgress[tutorialId].completedAt = new Date().toISOString();
+                
+                this.saveUserProgress();
+                this.renderTutorials();
+                this.updateProgressStats();
+                this.closeLesson();
+                
+                this.showNotification('恭喜！课程已完成', 'success');
+            }
+
+            // 关闭课程
+            closeLesson() {
+                document.getElementById('learningModal').classList.remove('active');
+                
+                // 更新进度
+                if (this.currentLesson) {
+                    const tutorialId = this.currentLesson.id;
+                    const progressPercent = Math.round((this.currentSection + 1) / this.currentLesson.sections.length * 100);
+                    
+                    if (progressPercent > this.userProgress[tutorialId].progress) {
+                        this.userProgress[tutorialId].progress = progressPercent;
+                        this.saveUserProgress();
+                        this.renderTutorials();
+                        this.updateProgressStats();
+                    }
+                }
+            }
+
+            // 更新进度统计
+            updateProgressStats() {
+                const totalTutorials = this.tutorials.length;
+                const completedTutorials = Object.values(this.userProgress).filter(p => p.completed).length;
+                const inProgressTutorials = Object.values(this.userProgress).filter(p => p.progress > 0 && !p.completed).length;
+                
+                // 计算总进度
+                let totalProgress = 0;
+                this.tutorials.forEach(tutorial => {
+                    totalProgress += this.userProgress[tutorial.id].progress;
+                });
+                totalProgress = Math.round(totalProgress / totalTutorials);
+                
+                // 更新显示
+                document.getElementById('completedCount').textContent = completedTutorials;
+                document.getElementById('inProgressCount').textContent = inProgressTutorials;
+                document.getElementById('totalCount').textContent = totalTutorials;
+                document.getElementById('totalProgress').textContent = totalProgress + '%';
+                document.getElementById('totalProgressBar').style.width = totalProgress + '%';
+            }
+
+            // 显示通知
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    border-radius: var(--border-radius);
+                    color: white;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                    z-index: 3000;
+                    animation: slideInRight 0.3s ease;
+                    font-weight: 500;
+                    max-width: 300px;
+                `;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // 页面加载完成后初始化教程系统
+        document.addEventListener('DOMContentLoaded', () => {
+            window.tutorialSystem = new FlightTutorialSystem();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备连接 - DroneControl</title>
+    <link rel="stylesheet" href="css/首页style.css">
+    <style>
+        .bluetooth-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .bluetooth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .bluetooth-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .bluetooth-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* 蓝牙开关卡�?*/
+        .bluetooth-toggle-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bluetooth-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bluetooth-icon-large {
+            font-size: 3rem;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            color: white;
+        }
+
+        .bluetooth-text h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .bluetooth-text p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* 开关样�?*/
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 38px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 38px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 30px;
+            width: 30px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(32px);
+        }
+
+        /* 扫描控制区域 */
+        .scan-control {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .scan-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .scan-icon {
+            font-size: 2rem;
+            animation: rotate 2s linear infinite;
+        }
+
+        .scan-icon.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .scan-text h4 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .scan-text p {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .btn-scan {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-scan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-scan.scanning {
+            background: #dc3545;
+        }
+
+        .btn-scan.scanning:hover {
+            background: #c82333;
+        }
+
+        /* 设备列表 */
+        .device-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-header h3 {
+            font-size: 1.4rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .device-item:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .device-item.connected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .device-item.connecting {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .device-icon {
+            font-size: 2.5rem;
+            margin-right: 20px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .device-item.connected .device-icon {
+            background: #28a745;
+            color: white;
+        }
+
+        .device-details {
+            flex: 1;
+        }
+
+        .device-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .device-info {
+            display: flex;
+            gap: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+
+        .device-item.connected .status-dot {
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .device-item.connecting .status-dot {
+            background: #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-connect, .btn-disconnect, .btn-pair {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-pair {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-pair:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-connect {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-connect:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-disconnect {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-disconnect:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* 已配对设�?*/
+        .paired-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        /* 信号强度 */
+        .signal-strength {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 20px;
+        }
+
+        .signal-bar {
+            width: 4px;
+            background: #ddd;
+            border-radius: 2px;
+        }
+
+        .signal-bar.active {
+            background: #28a745;
+        }
+
+        .signal-bar:nth-child(1) { height: 6px; }
+        .signal-bar:nth-child(2) { height: 10px; }
+        .signal-bar:nth-child(3) { height: 14px; }
+        .signal-bar:nth-child(4) { height: 18px; }
+
+        /* 空状�?*/
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 提示消息 */
+        .toast-message {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            max-width: 350px;
+        }
+
+        .toast-message.show {
+            display: flex;
+        }
+
+        .toast-message.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-message.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-message.info {
+            border-left: 4px solid #667eea;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bluetooth-toggle-card {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .bluetooth-info {
+                flex-direction: column;
+            }
+
+            .scan-control {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .device-item {
+                flex-wrap: wrap;
+            }
+
+            .device-actions {
+                width: 100%;
+                margin-top: 10px;
+                justify-content: flex-end;
+            }
+
+            .device-info {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航�?-->
+    <header class="top-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚁</span>
+                <span class="logo-text">DroneControl</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-login" onclick="window.location.href='首页.html'">返回首页</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主导航菜单 -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="首页.html">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">首页</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="连接.html">
+                        <span class="nav-icon">🔗</span>
+                        <span class="nav-text">设备连接</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="地图.html">
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">地图视图</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="控制台.html">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="任务管理.html">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">任务管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="数据分析.html">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据分析</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="飞行记录.html">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">飞行记录</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="通知.html">
+                        <span class="nav-icon">🔔</span>
+                        <span class="nav-text">通知中心</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="bluetooth-container">
+            <div class="bluetooth-header">
+                <h1>
+                    <span>📡</span>
+                    设备连接
+                </h1>
+                <p>搜索并连接您的无人机设备</p>
+            </div>
+
+            <!-- 蓝牙开关 -->
+            <div class="bluetooth-toggle-card">
+                <div class="bluetooth-info">
+                    <div class="bluetooth-icon-large">📶</div>
+                    <div class="bluetooth-text">
+                        <h3>蓝牙</h3>
+                        <p id="bluetoothStatusText">已关闭</p>
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="bluetoothToggle" onchange="toggleBluetooth()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- 扫描控制 -->
+            <div class="scan-control" id="scanControl" style="display: none;">
+                <div class="scan-info">
+                    <span class="scan-icon paused" id="scanIcon">🔄</span>
+                    <div class="scan-text">
+                        <h4 id="scanStatusText">点击开始扫描</h4>
+                        <p id="scanSubtext">搜索附近的无人机设备</p>
+                    </div>
+                </div>
+                <button class="btn-scan" id="scanBtn" onclick="toggleScan()">
+                    <span>🔍</span>
+                    <span id="scanBtnText">开始扫描</span>
+                </button>
+            </div>
+
+            <!-- 可用设备 -->
+            <div class="device-section" id="availableDevices" style="display: none;">
+                <div class="section-header">
+                    <h3>
+                        <span>📱</span>
+                        可用设备
+                    </h3>
+                    <span class="device-count" id="availableCount">0</span>
+                </div>
+                <div class="device-list" id="availableDeviceList">
+                    <!-- 动态生成设备列表 -->
+                </div>
+            </div>
+
+            <!-- 已配对设备 -->
+            <div class="device-section" id="pairedDevices">
+                <div class="section-header">
+                    <h3>
+                        <span>🔗</span>
+                        已配对设备
+                    </h3>
+                    <span class="device-count" id="pairedCount">0</span>
+                </div>
+                <div class="device-list" id="pairedDeviceList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h4>暂无已配对设备</h4>
+                        <p>开启蓝牙并扫描以发现新设备</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 提示消息 -->
+    <div class="toast-message" id="toastMessage">
+        <span id="toastIcon"></span>
+        <span id="toastText"></span>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 DroneControl. 保留所有权</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="连接.js"></script>
+ 
+    
+    </body>
+</html>
+

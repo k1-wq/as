@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百度地图定位</title>
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=oLL0cuF6jJT5QGMbU97VEEX1fcvobdmf"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .geoInfo {
+            width: 100%;
+            height: 600px;
+            position: relative;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #667eea;
+        }
+
+        .loading::before {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-panel {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .info-item {
+            display: inline-block;
+            margin-right: 30px;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .geoInfo {
+                height: 400px;
+            }
+
+            .info-item {
+                display: block;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️百度地图定位</h1>
+            <p>实时获取您的位置信息并在地图上显示</p>
+        </div>
+        <div class="geoInfo" id="geoInfo">
+            <div class="loading">正在加载地图...</div>
+        </div>
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">经度</div>
+                <div class="info-value" id="longitude">--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">纬度</div>
+                <div class="info-value" id="latitude">--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">状态</div>
+                <div class="info-value" id="status">定位中...</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let geoInfo = document.getElementById('geoInfo');
+        let map;
+        let longitudeEl = document.getElementById('longitude');
+        let latitudeEl = document.getElementById('latitude');
+        let statusEl = document.getElementById('status');
+
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(myGPSFun, function(error) {
+                statusEl.textContent = '定位失败';
+                statusEl.style.color = '#dc3545';
+                console.error('定位错误:', error);
+            });
+        } else {
+            alert("你的浏览器不支持定位功能");
+            statusEl.textContent = '浏览器不支持';
+            statusEl.style.color = '#dc3545';
+        }
+
+        function myGPSFun(e){
+            let jd = e.coords.longitude;
+            let wd = e.coords.latitude;
+            
+            // 更新信息显示
+            longitudeEl.textContent = jd.toFixed(6);
+            latitudeEl.textContent = wd.toFixed(6);
+            statusEl.textContent = '定位成功';
+            statusEl.style.color = '#28a745';
+
+            // 初始化地图
+            map = new BMap.Map("geoInfo");
+            map.centerAndZoom(new BMap.Point(jd, wd), 15);
+            map.enableScrollWheelZoom(true);
+
+            // 添加当前位置标记
+            let currentPoint = new BMap.Point(jd, wd);
+            let marker = new BMap.Marker(currentPoint);
+            map.addOverlay(marker);
+
+            // 添加信息窗口
+            let infoWindow = new BMap.InfoWindow(
+                "当前位置<br/>经度: " + jd.toFixed(6) + "<br/>纬度: " + wd.toFixed(6)
+            );
+            marker.addEventListener("click", function(){
+                this.openInfoWindow(infoWindow);
+            });
+
+            // 坐标转换（如果需要）
+            let point = new BMap.Point(123.512, 45.678);
+            let convertor = new BMap.Convertor();
+            let pointArr = [];
+            pointArr.push(point);
+            convertor.translate(pointArr, 1, 5, translateCallback);
+        }
+
+        function translateCallback(e){
+            if(e.status == 0){
+                let marker = new BMap.Marker(e.points[0]);
+                map.addOverlay(marker);
+            }
+        }
+    </script>
+    </body>
+</html>
+
